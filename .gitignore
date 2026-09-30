@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+scratch/
+data/raw/
+data/landmarks/
+data/distances/
+data/tmp/
+.pytest_cache/
+.DS_Store

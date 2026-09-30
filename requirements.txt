@@ -1,0 +1,14 @@
+# Python 3.11. Install with: uv venv --python 3.11 .venv && uv pip install -r requirements.txt
+mediapipe==0.10.14
+numpy==1.26.4
+opencv-python-headless==4.11.0.86
+pandas
+scipy
+scikit-learn
+torch==2.14.1
+tslearn==0.9.0
+fastdtw
+pyyaml
+matplotlib
+pytest
+tqdm
