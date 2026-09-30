@@ -60,6 +60,9 @@ Handedness: main setting uses MediaPipe's left/right slots as given; ablation pu
 wrist displacement in slot 1 (dominant-hand canonicalisation). One- versus two-handed: a sign is "two-handed" if both
 hands are detected in at least 50% of the hand-present frames across its train videos; accuracy is reported by group.
 
+Scaling: DTW and Euclidean nearest neighbour use the raw feature values. The learned models standardise each
+dimension with the mean and standard deviation of their own training subset (never val or test data).
+
 Temporal handling: DTW methods use the trimmed sequence downsampled by 2 (variable length). Euclidean nearest
 neighbour and the learned models use the trimmed sequence linearly resampled to 32 frames.
 

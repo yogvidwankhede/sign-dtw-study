@@ -106,7 +106,7 @@ def versions():
                 python=sys.version.split()[0], machine=platform.platform(), processor=platform.processor())
 
 
-def run(signs, workers=12, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
+def run(signs, workers=8, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
     jobs = [(s, sp) for s in signs for sp in C.SPLITS if not (C.LANDMARKS / s / f"{sp}.npz").exists()]
     if not jobs:
         print("nothing to do")
@@ -151,4 +151,4 @@ def run(signs, workers=12, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
 
 if __name__ == "__main__":
     n = int(sys.argv[1])
-    run(C.vocab(n))
+    run(C.vocab(n), workers=int(sys.argv[2]) if len(sys.argv) > 2 else 8)
