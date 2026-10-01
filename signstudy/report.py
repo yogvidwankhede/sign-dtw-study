@@ -454,7 +454,7 @@ def main():
     timing_table(led)
     led.add("nVocabMax", max(vocabs), "largest vocabulary evaluated", "results/tables/main_top1.csv", fmt="{:d}")
     led.add("nTestSigners", int(tab.signer.nunique()), "test signers (bootstrap clusters)", "results/raw/test/dtw1nn.csv.gz", fmt="{:d}")
-    for m in ("dtw1nn", "euclid1nn", "cnn1d", "bigru", "transformer", "dba_proto"):
+    for m in ("dtw1nn", "euclid1nn", "cnn1d", "bigru", "transformer", "dba_proto", "cnn1d_aug", "bigru_aug", "transformer_aug"):
         for v in vocabs:
             for k in map(str, K_ORDER):
                 r = d[(d.method == m) & (d.vocab == v) & (d.k == k)]
