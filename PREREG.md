@@ -160,3 +160,7 @@ Post-freeze notes (made after test results were seen; every one is listed here):
    was added so that DTW's best case is not understated.
 9. The timing script's CPU-load column was found to include background BLAS threads, so timing was rerun with all thread
    limits pinned; only the rerun is reported. Latency was measured with other processes running on the machine.
+10. History rewrite (1 Oct 2026, before anything was pushed or published): feature-cache pickles (`data/features/*.pkl`, about 2 GB)
+    had been committed by mistake and were removed from every commit with `git filter-branch`. The tag `prereg-v1` was
+    rewritten with them: it pointed to commit `e9fc22e` and now points to `dbbcc2b`. The tagged tree is identical to the original
+    in the content of every file except the removed cache files and one LaTeX build log (checked blob by blob).
