@@ -1,3 +1,12 @@
 \begin{abstract}
-[written after the final results]
+We ask when matching a sign's hand landmarks against stored examples with dynamic time warping (DTW) is competitive with trained
+neural networks for isolated sign recognition. On PopSign ASL v1.0 (American Sign Language, smartphone video) with the dataset's
+signer-disjoint split, we compare DTW and Euclidean nearest neighbour, DTW prototypes, a 1D-CNN, a BiGRU and a small Transformer on the
+same MediaPipe features, varying the examples per sign from 1 to all and the vocabulary from 10 to \nVocabMax{} signs.
+The analysis was pre-registered, each method family chose its own preprocessing on validation signers, and intervals come from
+resampling the \nTestSigners{} test signers. Contrary to our pre-registered expectation, the learned models beat DTW at every number of
+examples per sign we tried: at 50 signs and 10 examples per sign the CNN scores \accCnnVFiftyKTen\% top-1 against \accDtwVFiftyKTen\% for DTW,
+and with all training data \accTransVFiftyKAll\% against \accDtwVFiftyKAll\%. Richer features and preprocessing raised DTW to at best
+\ablBestDtwKAll\% with all data. We report latency, training cost, ablations and limitations. This is an isolated-sign study on one
+dataset; it is not translation and makes no claim about benefit to Deaf users.
 \end{abstract}

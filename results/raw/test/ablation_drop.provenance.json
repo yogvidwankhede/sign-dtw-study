@@ -1,0 +1,12 @@
+{
+ "commit": "9ef0a1b1a3f81c90796ce7a6df85a75aeff21b60",
+ "prereg_diff": "signstudy/pipeline.py |  30 +++++++++-\n signstudy/report.py   | 163 ++++++++++++++++++++++++++++++++++++++++++++++++--\n signstudy/timing.py   |   2 +-\n 3 files changed, 187 insertions(+), 8 deletions(-)",
+ "python": "3.11.15",
+ "numpy": "1.26.4",
+ "torch": "2.14.1",
+ "tslearn": "0.9.0",
+ "mediapipe": "0.10.14",
+ "opencv": "4.11.0",
+ "machine": "macOS-26.6.2-arm64-arm-64bit",
+ "time": "2026-10-01 06:50:27"
+}

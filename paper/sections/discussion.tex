@@ -1,2 +1,28 @@
 \section{Discussion}
-[PENDING: written after the ablations, latency and error analysis are in]
+\paragraph{What the data say.} On PopSign with signer-independent splits and hand-angle features, small learned models beat
+nearest-neighbour DTW from one example per sign upward, at vocabularies of 10 and 50 signs, and the two pre-registered
+expectations came out as: H1 (DTW ahead with few examples) not supported, H2 (learned models ahead with all data) supported. With
+one example per sign and 50 signs every method is weak (the best point estimate is \accTransVFiftyKOne\%). Euclidean
+nearest neighbour was never worse than DTW at 50 signs, and DBA prototypes were poor. Preprocessing mattered a great deal for the
+template-matching baselines (\tuneGapDtw{} points on validation between the naive and the chosen setting) and little for the learned
+models, which is a reason to tune baselines before concluding anything about them.
+
+\paragraph{Why DTW trails is untested.} Several explanations are plausible and we did not test them: the per-frame angle features are
+noisy, so extra alignment freedom may bring unrelated signs closer; the learned models can weight informative dimensions while DTW
+weights all dimensions equally; and signer variation, which a model trained on 31 signers can absorb, is a direct cost for
+template matching. Adding hand location and the preprocessing choices narrowed the gap only partly. We therefore make no causal
+claim about the mechanism.
+
+\paragraph{Relation to other results.} In general time-series classification, tuned nearest-neighbour DTW is a strong baseline
+\citep{bagnall2014nn}. Our result does not contradict that finding, because the setting differs: 420-dimensional noisy features
+from landmark detection, 50 classes, and test signers unseen in training; we did not investigate how far each of these differences
+matters. The earlier conference paper from the same author \citep{mankar2024} reported DTW ahead of an LSTM on a small custom
+dataset without a signer-independent split; we cannot re-run that experiment, and the present signer-independent results do not
+support carrying its conclusion over to this setting.
+
+\paragraph{Practical reading, with limits.} For this dataset and these features, a small learned model is the better default once
+a few labelled examples per sign and a few seconds of training are available, and it is also much cheaper at inference when many
+reference videos exist. Template matching keeps its practical advantages of requiring no training and of letting a new sign be added
+by storing one example, but in our experiments that convenience cost accuracy. This is a statement about one dataset, one language
+and our feature choices (Section~\ref{sec:limits}); it says nothing about whether any of these systems is useful to Deaf people,
+and accuracy on isolated signs is not communication access (Section~\ref{sec:ethics}).

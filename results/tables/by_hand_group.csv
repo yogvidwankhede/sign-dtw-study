@@ -1,0 +1,10 @@
+method,group,top1,n
+bigru,one-handed,0.848747591522158,1038
+bigru_aug,one-handed,0.850674373795761,1038
+cnn1d,one-handed,0.8554913294797688,1038
+cnn1d_aug,one-handed,0.8583815028901735,1038
+dba_proto,one-handed,0.12427745664739884,1038
+dtw1nn,one-handed,0.6339113680154143,1038
+euclid1nn,one-handed,0.6319845857418112,1038
+transformer,one-handed,0.859344894026975,1038
+transformer_aug,one-handed,0.8516377649325626,1038

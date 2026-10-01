@@ -13,3 +13,9 @@ results/tables_dev/
 figures/*_dev*
 data/*.log
 data/features/
+paper/pg-*.png
+paper/*.log
+paper/*.aux
+paper/*.blg
+paper/*.out
+paper/numbers_dev.tex

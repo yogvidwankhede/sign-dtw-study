@@ -1,0 +1,8 @@
+{
+ "machine": "macOS-26.6.2-arm64-arm-64bit",
+ "cpu": "Apple M4 Max",
+ "cores": 14,
+ "numba_threads": null,
+ "torch_threads": 8,
+ "note": "other processes were running on this machine during measurement"
+}

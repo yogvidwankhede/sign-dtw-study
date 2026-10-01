@@ -1,0 +1,12 @@
+{
+ "commit": "8701e1dd1e7e8f1008ad1d7a3f73af534b01f3dd",
+ "prereg_diff": "signstudy/report.py | 39 +++++++++++++++++++++++++++++++++++++++\n 1 file changed, 39 insertions(+)",
+ "python": "3.11.15",
+ "numpy": "1.26.4",
+ "torch": "2.14.1",
+ "tslearn": "0.9.0",
+ "mediapipe": "0.10.14",
+ "opencv": "4.11.0",
+ "machine": "macOS-26.6.2-arm64-arm-64bit",
+ "time": "2026-10-01 05:39:37"
+}

@@ -41,9 +41,9 @@ learned model is at or above DTW from $k=1$ upwards (smallest such $k$: \crossov
 In \nPairedLearnedExcl{} of the \nPairedLearned{} comparisons of a learned model with DTW (3 models, 6 values of $k$, 2 vocabularies) the 95\% interval excludes
 zero, and in \nPairedLearnedAhead{} the learned model's point estimate is higher (exploratory; no multiplicity correction). The gap is smallest at $k=1$, where every method is weak: at 50 signs no method
 exceeds \accTransVFiftyKOne\% (Transformer, the best) with one example per sign. Euclidean 1-NN is not worse than DTW at 50 signs:
-it is ahead by \difEuclidVFiftyKTwo, \difEuclidVFiftyKFive{} and \difEuclidVFiftyKTen{} points at $k=2$, 5 and 10 (intervals exclude zero) and indistinguishable at $k=1$, 20 and ``all'' (\difEuclidVFiftyKOne, \difEuclidVFiftyKTwenty{} and \difEuclidVFiftyKAll{} points). At 10 signs DTW is ahead
-of Euclidean 1-NN only with all training videos (\difEuclidVTenKAll{} points for Euclidean minus DTW, interval
-\difLoEuclidVTenKAll{} to \difHiEuclidVTenKAll{}).
+it is ahead by \difEuclidVFiftyKTwo, \difEuclidVFiftyKFive{} and \difEuclidVFiftyKTen{} points at $k=2$, 5 and 10 (intervals exclude zero) and indistinguishable at $k=1$, 20 and ``all'' (\difEuclidVFiftyKOne, \difEuclidVFiftyKTwenty{} and \difEuclidVFiftyKAll{} points). At 10 signs DTW is clearly ahead
+of Euclidean 1-NN (interval excluding zero) only with all training videos (Euclidean minus DTW: \difEuclidVTenKAll{} points, interval
+\difLoEuclidVTenKAll{} to \difHiEuclidVTenKAll{}), while Euclidean 1-NN is ahead at $k=2$ (\difEuclidVTenKTwo{} points).
 
 \subsection{DTW variants}
 DBA prototypes (one barycentre per sign) are poor and get worse with more references per sign at 50 signs
@@ -51,7 +51,7 @@ DBA prototypes (one barycentre per sign) are poor and get worse with more refere
 template. On one fixed draw (50 signs, 10 examples per sign, seed 0), exact DTW scores \accDtwSeedZeroVFiftyKTen\%, FastDTW
 (radius 1) \accFastDtwVFiftyKTen\% and the original repository's pipeline \accLegacyVFiftyKTen\%; the intervals overlap
 completely (\accLoLegacyVFiftyKTen--\accHiLegacyVFiftyKTen\% for the original pipeline), so these variants are not
-distinguishable at this sample size. [PENDING: latency comparison]
+distinguishable at this sample size. FastDTW is not faster here: our compiled exact DTW takes \latDtwKTen{} ms per query against 500 references on one thread, while the pure-Python FastDTW takes \latFastDtwKTen{} ms, so the difference reflects the implementations, not the algorithms.
 
 \subsection{Preprocessing matters more for the template-matching baselines}
 On validation signers (50 signs, 10 examples per sign), DTW with the naive default of zero-filled missing hands and raw features
@@ -61,5 +61,55 @@ gaps versus the chosen setting was \tuneZeroCnn\% vs \tuneBestCnn\% for the CNN.
 detected hand. We give each family its own validation-selected preprocessing so that no method is held back by an arbitrary
 default; the naive default would have made the DTW baseline look \tuneGapDtw{} points worse on validation.
 
-[PENDING: feature ablations, missing-hand and handedness ablations, augmentation arm, one- versus two-handed signs, per-sign errors,
-latency]
+\subsection{Feature sets, missing hands and handedness (ablations)}
+\begin{table}[t]
+\centering\small
+\input{../results/tables/ablation.tex}
+\caption{Top-1 accuracy (\%) at 50 signs by feature set, missing-hand handling and hand slots, for DTW 1-NN and the CNN. Rows without a dagger
+were pre-registered and run with the stated settings; rows marked $\dagger$ are an exploratory supplement added after seeing the
+main results (see \texttt{PREREG.md}). The F1/drop row is the main setting. Other methods and intervals:
+\texttt{results/tables/ablation.md}.}
+\label{tab:abl}
+\end{table}
+Table~\ref{tab:abl} shows the effect of each factor (the pre-registered feature ablations used zero-filled missing hands, so
+compare rows within the table). Dropping frames without a hand helps DTW (\ablDtwFOneZeroSlotsKFive\% with zero-fill to
+\ablDtwFOneDropSlotsKFive\% at $k=5$) more than the CNN (\ablCnnFOneZeroSlotsKFive\% to \ablCnnFOneDropSlotsKFive\%). Putting the more
+active hand in the first slot (dominant-hand canonicalisation) raises the CNN at $k=5$ from \ablCnnFOneZeroSlotsKFive\% to
+\ablCnnFOneZeroDominantKFive\% and DTW from \ablDtwFOneZeroSlotsKFive\% to \ablDtwFOneZeroDominantKFive\%, but with all training
+videos DTW goes down (\ablDtwFOneZeroSlotsKAll\% to \ablDtwFOneZeroDominantKAll\%). Adding hand location (F4) raises DTW with all
+videos from \ablDtwFOneZeroSlotsKAll\% (F1) to \ablDtwFFourZeroSlotsKAll\% and the CNN from \ablCnnFOneZeroSlotsKAll\% to
+\ablCnnFFourZeroSlotsKAll\%; adding upper-body pose changes little; adding face contours lowers DTW sharply
+(\ablDtwFSixZeroSlotsKAll\% with all videos) while the CNN stays near \ablCnnFSixZeroSlotsKAll\%.
+
+Across every setting we ran, the best DTW result was \ablBestDtwKFive\% at $k=5$ and \ablBestDtwKAll\% with all videos, against
+\ablBestCnnKFive\% and \ablBestCnnKAll\% for the best CNN setting, so no feature or preprocessing choice we tried closes the gap. These
+maxima are over many settings on the test signers and are therefore optimistic for both families.
+
+\subsection{Augmentation, one- and two-handed signs, and per-sign errors}
+Light augmentation (time stretch, noise, scale) changed the learned models by at most a few points: for the CNN at 50 signs,
+\accCnnAugVFiftyKOne\% versus \accCnnVFiftyKOne\% at $k=1$ and \accCnnAugVFiftyKAll\% versus \accCnnVFiftyKAll\% with all videos. The
+learned models' lead over DTW is therefore not an artefact of leaving them un-augmented. We could not compare one- and two-handed
+signs: under the pre-registered rule (both hands detected in at least half of the hand-present frames), \nTwoHandedSigns{} of the
+50 signs are two-handed and \nOneHandedSigns{} are one-handed, consistent with PopSign's one-handed focus.
+
+With all training videos, DTW is below 50\% on \nSignsDtwBelowHalf{} of the 50 signs, with the lowest being \worstSignDtw{}
+(\worstSignDtwAcc\%), whereas the CNN is below 50\% on \nSignsCnnBelowHalf{} signs (lowest: \cnnWorstSign, \cnnWorstSignAcc\%). The most
+frequent DTW confusion is \topConfTrue{} recognised as \topConfPred{} (\topConfN{} test queries). PopSign has no phonological
+annotation, so we make no claim about why signs are confused; the full lists are in \texttt{results/tables}.
+
+\subsection{Cost: training and inference}
+Template matching needs no training but its inference cost grows with the number of references: with 500 references (10 per sign)
+one query takes \latDtwKTen{} ms (95th percentile \latPDtwKTen{} ms) on one thread of an Apple M4 Max with our compiled DTW, and
+\latDtwKAll{} ms with all \latRefsAll{} training videos as references (Euclidean nearest neighbour: \latEuclidKTen{} and \latEuclidKAll{} ms). A forward
+pass of a trained model takes \latCnn{} ms (CNN), \latTrans{} ms (Transformer) and \latGru{} ms (BiGRU) on one CPU thread, independent
+of the number of training examples. Training the CNN and Transformer took on average \trainSecCnnKTen{} and \trainSecTransKTen{}
+seconds at 10 examples per sign and \trainSecCnnKAll{} and \trainSecTransKAll{} seconds with all videos on the Apple GPU (BiGRU:
+\trainSecGruKTen{} and \trainSecGruKAll{} seconds; training times varied with load on the shared machine). Latency was measured with other
+processes running, and no low-power device was available. These costs exclude MediaPipe landmark extraction
+(\extractHours{} wall-clock hours for the 50 signs on this machine).
+
+\subsection{Coverage}
+Vocabularies of 100 and 250 signs were not run: landmark extraction for 50 signs took \extractHours{} hours on this machine and
+the larger vocabularies would have taken several times longer. The ASL Citizen replication and soft-DTW prototypes in the
+pre-registration were not run. Of the \nVideosTest{} test queries at 50 signs, \nNoHandTest{} had no detected hand and is counted as
+an error; the training and validation splits have \nNoHandTrain{} and \nNoHandVal{} such videos.
