@@ -417,6 +417,8 @@ def timing_table(led=None):
             for k, kw in (("10", "KTen"), ("full", "KAll")):
                 r = get(method, k)
                 if r is not None:
+                    if method == "dtw1nn" and k == "full":
+                        led.add("latRefsAll", int(r.refs), "number of reference videos when all training videos of the 50 signs are references", "results/timing/latency_threads1.csv", fmt="{:d}")
                     led.add(f"lat{name}{kw}", r.median_ms, f"median per-query latency ms, {method}, {int(r.refs)} references, 1 thread, vocabulary 50", "results/timing/latency_threads1.csv")
                     led.add(f"latP{name}{kw}", r.p95_ms, f"95th percentile per-query latency ms, same setting", "results/timing/latency_threads1.csv")
         for method, name in (("cnn1d_cpu", "Cnn"), ("bigru_cpu", "Gru"), ("transformer_cpu", "Trans")):
