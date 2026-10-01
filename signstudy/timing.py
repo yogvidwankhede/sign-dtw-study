@@ -50,7 +50,7 @@ def main():
     cond = X.build_condition(C.vocab(a.vocab))
     nq = min(a.queries, len(cond.val.seqs))
     qs = [F.dtw_sequence(x) for x in cond.val.seqs[:nq]]
-    qr = [F.resample(x) for x in cond.val.seqs[:nq]]
+    qr = np.stack([F.resample(x) for x in cond.val.seqs[:nq]])
     rows = []
     for k in (10, "full"):
         order = X.orders_for(cond, 0)
