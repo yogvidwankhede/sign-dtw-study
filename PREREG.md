@@ -146,5 +146,7 @@ Revisions made after a validation-only smoke test on 4 signs and **before any te
 4. DBA uses tslearn's default deterministic initialisation (the installed version has no random initialisation option) and a
    barycentre length equal to the median reference length: the tslearn default (longest reference) made prototypes
    unmatched to shorter queries and collapsed accuracy to chance in the validation dry run.
+6. Validation-only development runs (4 and 10 signs, validation split) were committed to git history before the final
+   tuning; they contain no test-split scores. They were removed from the working tree before tuning at 50 signs.
 5. Clarified that the "all methods" ablation covers the methods of section 4 (the original sentence pointed at section 7).
 

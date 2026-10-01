@@ -11,3 +11,5 @@ data/tmp/
 *_dev*
 results/tables_dev/
 figures/*_dev*
+data/*.log
+data/features/
