@@ -309,6 +309,13 @@ def data_and_compute_stats(led, vocab=50):
         led.add("nVideosExtracted", sum(r["kept"] for r in keep), f"videos converted to landmarks for the {vocab} signs", "data/landmarks/EXTRACTION_LOG.jsonl", fmt="{:d}")
     tt = [pd.read_csv(f) for f in RAW.glob("*_training_time.csv.gz")]
     if tt:
+        allt = pd.concat(tt)
+        allt["k"] = allt["k"].astype(str)
+        for key, name in (("cnn1d", "Cnn"), ("bigru", "Gru"), ("transformer", "Trans")):
+            for k, kw in (("10", "KTen"), ("full", "KAll")):
+                g = allt[(allt.method == key) & (allt.vocab == 50) & (allt.k == k)]
+                if len(g):
+                    led.add(f"trainSec{name}{kw}", g.train_s.mean(), f"mean training wall-clock seconds, {key}, vocabulary 50, k={k} (Apple GPU via MPS, machine shared)", "results/raw/test/*_training_time.csv.gz", fmt="{:.0f}")
         led.add("trainHours", pd.concat(tt).train_s.sum() / 3600, "total wall-clock hours spent training the main-grid learned models (excludes tuning, ablations, augmentation)", "results/raw/test/*_training_time.csv.gz")
 
 
