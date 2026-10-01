@@ -1,0 +1,12 @@
+{
+ "commit": "28823d1325775447708017d8b0dbd8cf5b24c55b",
+ "prereg_diff": "",
+ "python": "3.11.15",
+ "numpy": "1.26.4",
+ "torch": "2.14.1",
+ "tslearn": "0.9.0",
+ "mediapipe": "0.10.14",
+ "opencv": "4.11.0",
+ "machine": "macOS-26.6.2-arm64-arm-64bit",
+ "time": "2026-09-30 21:18:16"
+}

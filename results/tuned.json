@@ -1,0 +1,566 @@
+{
+ "n_tune": 10,
+ "k": 10,
+ "seed": 0,
+ "families": {
+  "dtw": {
+   "missing": "drop",
+   "scale": "raw",
+   "radius": -1
+  },
+  "euclid": {
+   "missing": "drop",
+   "scale": "std"
+  },
+  "cnn1d": {
+   "missing": "drop",
+   "lr": 0.001,
+   "epochs": 20
+  },
+  "bigru": {
+   "missing": "drop",
+   "lr": 0.001,
+   "epochs": 20
+  },
+  "transformer": {
+   "missing": "drop",
+   "lr": 0.0003,
+   "epochs": 20
+  }
+ },
+ "grids": {
+  "dtw": [
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": 3
+    },
+    0.5026455026455027
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": 5
+    },
+    0.5185185185185185
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": 8
+    },
+    0.5291005291005291
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": -1
+    },
+    0.5343915343915344
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": 3
+    },
+    0.5079365079365079
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": 5
+    },
+    0.5185185185185185
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": 8
+    },
+    0.5291005291005291
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": -1
+    },
+    0.5502645502645502
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": 3
+    },
+    0.5767195767195767
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": 5
+    },
+    0.5714285714285714
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": 8
+    },
+    0.5767195767195767
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": -1
+    },
+    0.5925925925925926
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": 3
+    },
+    0.5978835978835979
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": 5
+    },
+    0.5978835978835979
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": 8
+    },
+    0.6084656084656085
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": -1
+    },
+    0.6137566137566137
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": 3
+    },
+    0.6613756613756614
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": 5
+    },
+    0.6772486772486772
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": 8
+    },
+    0.6825396825396826
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": -1
+    },
+    0.6878306878306878
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": 3
+    },
+    0.6666666666666666
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": 5
+    },
+    0.6772486772486772
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": 8
+    },
+    0.671957671957672
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": -1
+    },
+    0.6772486772486772
+   ]
+  ],
+  "euclid": [
+   [
+    {
+     "missing": "zero",
+     "scale": "raw"
+    },
+    0.4973544973544973
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std"
+    },
+    0.544973544973545
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw"
+    },
+    0.6349206349206349
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std"
+    },
+    0.6825396825396826
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw"
+    },
+    0.6931216931216931
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std"
+    },
+    0.7566137566137566
+   ]
+  ],
+  "cnn1d": [
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8465608465608465
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8465608465608465
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8412698412698413
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8412698412698413
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.7777777777777778
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.7777777777777778
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.7724867724867724
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.7724867724867724
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8888888888888888
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8888888888888888
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8783068783068783
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8783068783068783
+   ]
+  ],
+  "bigru": [
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8677248677248677
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8677248677248677
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8306878306878307
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8306878306878307
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8148148148148148
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8148148148148148
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.7777777777777778
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.7777777777777778
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.873015873015873
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.873015873015873
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8677248677248677
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8677248677248677
+   ]
+  ],
+  "transformer": [
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8095238095238095
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8095238095238095
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8201058201058201
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8201058201058201
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.7566137566137566
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.7566137566137566
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.7566137566137566
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.7566137566137566
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8412698412698413
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8412698412698413
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8518518518518519
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8518518518518519
+   ]
+  ]
+ },
+ "provenance": {}
+}

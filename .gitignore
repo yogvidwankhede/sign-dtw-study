@@ -8,3 +8,6 @@ data/distances/
 data/tmp/
 .pytest_cache/
 .DS_Store
+*_dev*
+results/tables_dev/
+figures/*_dev*
