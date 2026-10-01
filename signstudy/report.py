@@ -283,6 +283,35 @@ def group_accuracy(df, led, vocab=50):
     return out
 
 
+def data_and_compute_stats(led, vocab=50):
+    """Split sizes, failed-detection counts, parameter counts and compute spent (Responsible NLP checklist B6, C1)."""
+    import json as _json
+    from . import experiment as X
+    from . import models as M
+    cond = X.build_condition(C.vocab(vocab), "F1", "zero")
+    rows = []
+    for name in ("train", "val", "test"):
+        sp = getattr(cond, name)
+        rows.append(dict(split=name, videos_used=len(sp.seqs), no_hand_detected=sp.failed,
+                         signers=len(set(sp.signer) | set(sp.failed_signer)), vocabulary=vocab))
+        led.add(f"nVideos{name.capitalize()}", len(sp.seqs) + sp.failed, f"{name} videos (queries for val/test) at vocabulary {vocab}", "data/landmarks (cached features)", fmt="{:d}")
+        led.add(f"nNoHand{name.capitalize()}", sp.failed, f"{name} videos with no hand detected in any frame (counted as errors)", "data/landmarks (cached features)", fmt="{:d}")
+        led.add(f"nSigners{name.capitalize()}", len(set(sp.signer) | set(sp.failed_signer)), f"signers in the {name} split", "data/landmarks (cached features)", fmt="{:d}")
+    pd.DataFrame(rows).to_csv(TABLES / "data_stats.csv", index=False)
+    d_in = cond.train.seqs[0].shape[1]
+    for key, name in (("cnn1d", "Cnn"), ("bigru", "Gru"), ("transformer", "Trans")):
+        led.add(f"nParams{name}", M.n_params(M.build(key, d_in, vocab)), f"parameters of the {key} model for {d_in}-dim input and {vocab} classes", "signstudy/models.py", fmt="{:,d}".replace(",", ""))
+    log = C.LANDMARKS / "EXTRACTION_LOG.jsonl"
+    if log.exists():
+        rec = [_json.loads(l) for l in log.read_text().splitlines()]
+        keep = [r for r in rec if r["sign"] in set(C.vocab(vocab))]
+        led.add("extractHours", sum(r["extract_s"] for r in keep) / 3600, f"MediaPipe extraction wall-clock hours for the {vocab} signs (8 workers, machine shared with other jobs)", "data/landmarks/EXTRACTION_LOG.jsonl")
+        led.add("nVideosExtracted", sum(r["kept"] for r in keep), f"videos converted to landmarks for the {vocab} signs", "data/landmarks/EXTRACTION_LOG.jsonl", fmt="{:d}")
+    tt = [pd.read_csv(f) for f in RAW.glob("*_training_time.csv.gz")]
+    if tt:
+        led.add("trainHours", pd.concat(tt).train_s.sum() / 3600, "total wall-clock hours spent training the main-grid learned models (excludes tuning, ablations, augmentation)", "results/raw/test/*_training_time.csv.gz")
+
+
 def ablation_table(led):
     f = RAW / "ablation.csv.gz"
     if not f.exists():
@@ -343,6 +372,8 @@ def main():
     tuning_table(led)
     legacy_macros(ci, led, df)
     group_accuracy(df, led)
+    if SPLIT == "test":
+        data_and_compute_stats(led)
     latex_tables(d)
     ablation_table(led)
     per_sign(df, max(vocabs), signs)
