@@ -180,6 +180,32 @@ def stage_groups(n):
     return out
 
 
+def stage_ablate_drop(split, n_abl):
+    """EXPLORATORY SUPPLEMENT (added after the freeze, see PREREG.md Deviations): richer feature sets with the tuned
+    drop-frames setting, so that DTW's best case is not understated by zero-filling in the main ablation."""
+    if split == "test":
+        R.guard_test_split()
+    t = _tuned()["families"]
+    signs = C.vocab(n_abl)
+    ks = [5, "full"]
+    global KS
+    saved, KS = KS, ks
+    rows = []
+    try:
+        for fset, missing, dom in [("F3", "drop", False), ("F4", "drop", False), ("F5", "drop", False), ("F4", "drop", True)]:
+            cond = X.build_condition(signs, fset, missing, dom)
+            rows.append(_dtw_family(cond, split, t["dtw"], [n_abl]))
+            rows.append(_euclid_family(cond, split, t["euclid"], [n_abl]))
+            for m in MODELS:
+                hp = t[m]
+                df, _ = R.eval_learned(cond, split, m, [n_abl], ks, SEEDS, lr=hp["lr"], epochs=hp["epochs"])
+                rows.append(df)
+            R.save(pd.concat(rows, ignore_index=True), "ablation_drop", split)
+    finally:
+        KS = saved
+    return pd.concat(rows, ignore_index=True)
+
+
 def stage_ablate(split, n_abl):
     """Feature sets, missing-hand handling and handedness at vocabulary n_abl, k in {5, full}; each family keeps its
     tuned scaling / band / learning rate, only the factor under study changes."""
@@ -210,7 +236,7 @@ def stage_ablate(split, n_abl):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("stage", choices=["tune", "main", "ablate", "aug", "groups"])
+    ap.add_argument("stage", choices=["tune", "main", "ablate", "ablate_drop", "aug", "groups"])
     ap.add_argument("--split", default="val", choices=["val", "test"])
     ap.add_argument("--vocab", type=int, default=10, help="number of signs to use (must be extracted)")
     ap.add_argument("--methods", nargs="*", default=["dtw", "euclid", "dba", *MODELS])
@@ -222,6 +248,8 @@ def main():
         stage_tune(a.vocab)
     elif a.stage == "main":
         stage_main(a.split, a.vocab, a.methods)
+    elif a.stage == "ablate_drop":
+        stage_ablate_drop(a.split, a.vocab)
     elif a.stage == "aug":
         stage_aug(a.split, a.vocab)
     elif a.stage == "groups":

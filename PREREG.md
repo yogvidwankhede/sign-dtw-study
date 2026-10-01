@@ -150,3 +150,13 @@ Revisions made after a validation-only smoke test on 4 signs and **before any te
    tuning; they contain no test-split scores. They were removed from the working tree before tuning at 50 signs.
 5. Clarified that the "all methods" ablation covers the methods of section 4 (the original sentence pointed at section 7).
 
+Post-freeze notes (made after test results were seen; every one is listed here):
+
+7. The feature-set ablation (F1-F6, handedness) used zero-filled missing hands, because the ablation stage builds its
+   conditions with the default setting; the pre-registration did not state this. The F1/drop row of the same table is the
+   main setting. Compare rows within the table.
+8. Exploratory supplement, added after seeing that DTW trailed the learned models: F3, F4, F5 and F4 with dominant-hand
+   slots under the tuned drop setting (`pipeline ablate_drop`), run at vocabulary 50, k in {5, all}. It is exploratory and
+   was added so that DTW's best case is not understated.
+9. The timing script's CPU-load column was found to include background BLAS threads, so timing was rerun with all thread
+   limits pinned; only the rerun is reported. Latency was measured with other processes running on the machine.
