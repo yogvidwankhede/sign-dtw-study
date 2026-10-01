@@ -85,8 +85,8 @@ The features themselves stay F1 in the main grid.
 2. **FastDTW-1NN** (radius 1, fastdtw 0.3.4): latency and accuracy only, on a fixed subsample (vocabulary 50, k=10).
 3. **Legacy DTW**: the original repository's pipeline (per-hand DTW over detected frames only, hand-set must match,
    normalised coordinates, FastDTW), as a reference point.
-4. **DBA prototype**: one DTW barycentre per sign from its k references (tslearn 0.9.0 default initialisation, 30
-   iterations), nearest prototype by DTW, using the DTW family's chosen preprocessing.
+4. **DBA prototype**: one DTW barycentre per sign from its k references (tslearn 0.9.0 default initialisation, barycentre length = median length of the
+   sign's references, 30 iterations), nearest prototype by DTW, using the DTW family's chosen preprocessing.
 5. **Soft-DTW prototype**: exploratory, run only if time allows; otherwise reported as not run.
 6. **Euclidean-1NN** on the 32-frame resampled flattened features.
 7. **1D-CNN**, 8. **BiGRU**, 9. **small Transformer encoder** (architectures in `signstudy/models.py`): cross-entropy
@@ -143,6 +143,8 @@ Revisions made after a validation-only smoke test on 4 signs and **before any te
    suggested zero-filling creates jumps DTW cannot ignore while the original repository dropped those frames.
 3. Replaced the 600-step floor of the learned-model step rule by 200, and the epoch grid by {20, 80}, because with the
    floor at 600 the epoch choice had no effect for datasets under about 1,300 examples.
-4. DBA uses tslearn's default deterministic initialisation (the installed version has no random initialisation option).
+4. DBA uses tslearn's default deterministic initialisation (the installed version has no random initialisation option) and a
+   barycentre length equal to the median reference length: the tslearn default (longest reference) made prototypes
+   unmatched to shorter queries and collapsed accuracy to chance in the validation dry run.
 5. Clarified that the "all methods" ablation covers the methods of section 4 (the original sentence pointed at section 7).
 

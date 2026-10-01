@@ -115,3 +115,13 @@ animal val 149 videos 168.6 s
 animal test 134 videos 107.1 s
 happy train 552 videos 526.2 s
 happy val 159 videos 136.5 s
+happy test 154 videos 95.8 s
+police train 80 videos 105.1 s
+police val 39 videos 49.5 s
+police test 48 videos 40.6 s
+that train 575 videos 844.0 s
+that val 154 videos 240.3 s
+that test 152 videos 156.9 s
+not train 572 videos 1143.0 s
+not val 156 videos 253.1 s
+not test 156 videos 193.7 s

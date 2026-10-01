@@ -31,7 +31,7 @@ def available_vocab():
 
 
 def vocabs_up_to(n_avail):
-    return [v for v in C.VOCAB_SIZES if v <= n_avail]
+    return sorted({v for v in C.VOCAB_SIZES if v <= n_avail} | {n_avail})
 
 
 MISSING = ("zero", "ffill", "drop")

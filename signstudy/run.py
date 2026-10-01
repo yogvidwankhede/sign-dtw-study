@@ -155,7 +155,9 @@ def eval_prototypes(cond, split_name, vocabs, ks, seeds, radius=-1, max_iter=30,
                 idx = order[s] if k == "full" else order[s][:k]
                 seqs = [F.dtw_sequence(cond.train.seqs[i]) / sd for i in idx]
                 protos.append(seqs[0] if len(seqs) == 1 else
-                              dtw_barycenter_averaging(seqs, max_iter=max_iter).astype(np.float32))
+                              dtw_barycenter_averaging(
+                                  seqs, barycenter_size=int(np.median([len(x) for x in seqs])),
+                                  max_iter=max_iter).astype(np.float32))
             dist = L.dtw_matrix(qs, protos, radius)
             for n in vocabs:
                 qmask = split.y < n
