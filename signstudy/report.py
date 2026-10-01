@@ -372,7 +372,7 @@ def ablation_table(led):
     return ci
 
 
-def per_sign(df, vocab, signs):
+def per_sign(df, vocab, signs, led=None):
     d = df[(df.method == "dtw1nn") & (df.vocab == vocab) & (df.k == "full") & (df.fset == "F1")]
     if d.empty:
         return
@@ -384,6 +384,19 @@ def per_sign(df, vocab, signs):
     conf["true"] = [signs[i] for i in conf.sign]
     conf["predicted"] = [signs[i] for i in conf.pred]
     conf[["true", "predicted", "n"]].to_csv(TABLES / "top_confusions_dtw_full.csv", index=False)
+    if led is not None:
+        w = acc.sort_values("top1")
+        led.add("worstSignDtw", w.sign_name.iloc[0], "sign with the lowest DTW 1-NN top-1 (vocabulary 50, all references)", "results/tables/per_sign_dtw_full.csv", fmt="{}")
+        led.add("worstSignDtwAcc", pct(w.top1.iloc[0]), "that sign's top-1 %", "results/tables/per_sign_dtw_full.csv")
+        led.add("nSignsDtwBelowHalf", int((acc.top1 < 0.5).sum()), "signs with DTW 1-NN top-1 below 50% (vocabulary 50, all references)", "results/tables/per_sign_dtw_full.csv", fmt="{:d}")
+        led.add("topConfTrue", conf.true.iloc[0], "most frequent DTW confusion: true sign", "results/tables/top_confusions_dtw_full.csv", fmt="{}")
+        led.add("topConfPred", conf.predicted.iloc[0], "most frequent DTW confusion: predicted sign", "results/tables/top_confusions_dtw_full.csv", fmt="{}")
+        led.add("topConfN", int(conf.n.iloc[0]), "number of times that confusion occurred", "results/tables/top_confusions_dtw_full.csv", fmt="{:d}")
+        c = df[(df.method == "cnn1d") & (df.vocab == vocab) & (df.k == "full") & (df.fset == "F1")]
+        ca = c.groupby("sign").apply(lambda g: (g["rank"] <= 1).mean(), include_groups=False)
+        led.add("nSignsCnnBelowHalf", int((ca < 0.5).sum()), "signs with CNN top-1 below 50% (vocabulary 50, all examples)", "results/raw/test/cnn1d.csv.gz", fmt="{:d}")
+        led.add("cnnWorstSign", signs[int(ca.idxmin())], "sign with the lowest CNN top-1", "results/raw/test/cnn1d.csv.gz", fmt="{}")
+        led.add("cnnWorstSignAcc", pct(ca.min()), "that sign's CNN top-1 %", "results/raw/test/cnn1d.csv.gz")
 
 
 def timing_table(led=None):
@@ -435,7 +448,7 @@ def main():
         data_and_compute_stats(led)
     latex_tables(d)
     ablation_table(led)
-    per_sign(df, max(vocabs), signs)
+    per_sign(df, max(vocabs), signs, led)
     timing_table(led)
     led.add("nVocabMax", max(vocabs), "largest vocabulary evaluated", "results/tables/main_top1.csv", fmt="{:d}")
     led.add("nTestSigners", int(tab.signer.nunique()), "test signers (bootstrap clusters)", "results/raw/test/dtw1nn.csv.gz", fmt="{:d}")
