@@ -51,7 +51,7 @@ DBA prototypes (one barycentre per sign) are poor and get worse with more refere
 template. On one fixed draw (50 signs, 10 examples per sign, seed 0), exact DTW scores \accDtwSeedZeroVFiftyKTen\%, FastDTW
 (radius 1) \accFastDtwVFiftyKTen\% and the original repository's pipeline \accLegacyVFiftyKTen\%; the intervals overlap
 completely (\accLoLegacyVFiftyKTen--\accHiLegacyVFiftyKTen\% for the original pipeline), so these variants are not
-distinguishable at this sample size. FastDTW is not faster here: our compiled exact DTW takes \latDtwKTen{} ms per query against 500 references on one thread, while the pure-Python FastDTW takes \latFastDtwKTen{} ms, so the difference reflects the implementations, not the algorithms.
+distinguishable at this sample size. FastDTW is not faster here: our compiled exact DTW takes \latDtwKTen{} ms per query against 500 references on one thread, while the pure-Python FastDTW takes \latFastDtwKTen{} ms, so this comparison mostly reflects the two implementations; we did not compare the algorithms at equal implementation quality.
 
 \subsection{Preprocessing matters more for the template-matching baselines}
 On validation signers (50 signs, 10 examples per sign), DTW with the naive default of zero-filled missing hands and raw features

@@ -13,6 +13,7 @@ the picture. We include one augmentation arm to test sensitivity at one vocabula
 earlier implementation, which carry no hand location or orientation. DTW and Euclidean matching each chose among the preprocessing
 options listed in Section~\ref{sec:methods} on validation signers, but other options, local costs or learned metrics might favour template
 matching more.
+\item \textbf{Baselines not run.} We did not run other strong time-series classifiers, such as random-convolution-kernel methods \citep{dempster2020rocket} or the algorithms compared in the time-series bake-off \citep{bagnall2017bakeoff}, nor learned embeddings with nearest-neighbour search \citep{vandendriessche2025onesh}, nor pre-trained or end-to-end video models.
 \item \textbf{Landmark quality.} Results depend on MediaPipe 0.10.14 and on the resize used; the fraction of videos or frames
 without detected hands is reported in the tables. Face and other non-manual signals are mostly not modelled.
 \item \textbf{Not translation, not an application.} Top-1 accuracy on isolated signs is not communication access. We did not
