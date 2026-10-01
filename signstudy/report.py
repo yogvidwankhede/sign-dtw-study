@@ -150,6 +150,10 @@ def hypotheses(tab, led, vocab):
     led.add("hOneSupported", "yes" if (len(h1) and (h1.lo > 0).all()) else "no",
             f"H1 supported at vocabulary {vocab}: DTW above every learned model for k in 1,2,5 (97.5% intervals exclude 0)",
             "results/tables/hypotheses.csv", fmt="{}")
+    adj = df[df.hyp.str.startswith("H2 (adj")]
+    led.add("hTwoAdjSupported", "yes" if (len(adj) and (adj.lo > 0).all()) else "no",
+            "H2 interval still excludes 0 for every learned model after adjusting for 3 models (99.17%)", "results/tables/hypotheses.csv", fmt="{}")
+    led.add("nHOneBelowZero", int(((h1.hi < 0)).sum()), "H1 comparisons (k=1,2,5 x 3 models) whose 97.5% interval lies wholly below 0 (DTW below the learned model)", "results/tables/hypotheses.csv", fmt="{:d}")
     led.add("hTwoSupported", "yes" if (len(h2) and (h2.lo > 0).any()) else "no",
             f"H2 supported at vocabulary {vocab}: some learned model above DTW at k=full (97.5% interval excludes 0)",
             "results/tables/hypotheses.csv", fmt="{}")
@@ -193,6 +197,10 @@ def paired_table(tab, led, vocabs):
     if df.empty:
         return df
     df.to_csv(TABLES / "paired_vs_dtw.csv", index=False)
+    learned = df[df.a != "euclid1nn"]
+    led.add("nPairedLearned", len(learned), "paired comparisons of a learned model with DTW (3 models x k x vocabulary)", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
+    led.add("nPairedLearnedExcl", int(((learned.lo > 0) | (learned.hi < 0)).sum()), "of those, 95% intervals excluding zero", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
+    led.add("nPairedLearnedAhead", int((learned.diff > 0).sum()), "of those, learned model's point estimate above DTW", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
     for r in df.itertuples():
         led.add(nm("dif", r.a, r.vocab, r.k), pct(r.diff), f"{r.a} minus dtw1nn, top-1 percentage points, vocabulary {r.vocab}, k={r.k} (exploratory)", "results/tables/paired_vs_dtw.csv")
         led.add(nm("difLo", r.a, r.vocab, r.k), pct(r.lo), f"lower 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
@@ -232,6 +240,10 @@ def tuning_table(led):
         led.add(f"tuneBest{name[fam]}", pct(g.val_top1.max()), f"validation top-1 of the chosen {fam} configuration (vocabulary {t['n_tune']}, k=10)", "results/tuned.json")
         led.add(f"tuneZero{name[fam]}", pct(g[g.missing == "zero"].val_top1.max()), f"best validation top-1 of {fam} with zero-filled missing hands", "results/tuned.json")
         led.add(f"tuneWorst{name[fam]}", pct(g.val_top1.min()), f"worst validation top-1 in the {fam} grid", "results/tuned.json")
+    ch = df[df.family == "dtw"].val_top1.max()
+    nv = df[(df.family == "dtw") & (df.missing == "zero") & (df.scale == "raw") & (df.radius == -1)].val_top1
+    if len(nv):
+        led.add("tuneGapDtw", pct(ch - nv.iloc[0]), "validation top-1 gain of the chosen DTW configuration over the naive default, percentage points", "results/tuned.json")
     naive = df[(df.family == "dtw") & (df.missing == "zero") & (df.scale == "raw") & (df.radius == -1)].val_top1
     if len(naive):
         led.add("tuneNaiveDtw", pct(naive.iloc[0]), "validation top-1 of DTW with zero-fill, raw scale, unconstrained", "results/tuned.json")
