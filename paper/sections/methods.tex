@@ -1,7 +1,7 @@
 \section{Data and methods}
 \label{sec:methods}
 \paragraph{Data.} We use the \texttt{game} category of PopSign ASL v1.0 \citep{starner2023popsign}: 250 signs recorded on
-smartphones, CC~BY~4.0, with a training split of 31 signers, a validation split of 8 and a test split of 8. The code checks that
+smartphones, CC~BY~4.0, with a training split of \nSignersTrain{} signers, a validation split of \nSignersVal{} and a test split of \nSignersTest{}. The code checks that
 no signer appears in two splits. Vocabularies of 10, 50, 100 and 250 signs are nested prefixes of a fixed random order of the
 signs. A vocabulary is reported only if every one of its signs was processed; others are marked as not run. Videos are
 downloaded, converted to landmarks and deleted.
@@ -18,7 +18,7 @@ zero-filled in the main setting.
 \paragraph{Methods.} \textbf{DTW 1-NN} compares a query with every stored reference using DTW with Euclidean local cost
 and a Sakoe--Chiba band chosen on validation signers, and returns the label of the nearest reference. \textbf{Euclidean 1-NN}
 compares sequences resampled to 32 frames. \textbf{DBA prototype} replaces each sign's references by their DTW barycentre (length equal to the median reference length).
-The learned models are a 1D-CNN, a two-layer BiGRU and a three-layer Transformer encoder (each about 0.5M parameters) trained
+The learned models are a 1D-CNN, a two-layer BiGRU and a three-layer Transformer encoder (\nParamsTrans{} to \nParamsGru{} parameters) trained
 with cross-entropy for a fixed number of gradient steps with no early stopping, so no validation labels enter training. DTW
 distances are computed by our own compiled implementation, which is tested against tslearn \citep{tavenard2020tslearn}.
 Every method family chooses its own preprocessing on validation signers only (50 signs, 10 examples per sign, one draw), then it is fixed: how missing hands are handled (zero-fill, carry the last detection forward, or drop those frames), whether features are divided by their standard deviation over the references, and the DTW band (3, 5, 8 frames or none) for DTW; learning rate ($10^{-3}$ or $3\times10^{-4}$) and epoch budget (20 or 80) for the learned models. Training takes $\min(\max(\lceil \text{epochs}\cdot N/64\rceil,200),4000)$ gradient steps for $N$ training examples, so the largest conditions get only a few epochs.
