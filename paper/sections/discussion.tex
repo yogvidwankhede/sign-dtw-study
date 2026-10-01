@@ -9,7 +9,7 @@ models, which is a reason to tune baselines before concluding anything about the
 
 \paragraph{Why DTW trails is untested.} Several explanations are plausible and we did not test them: the per-frame angle features are
 noisy, so extra alignment freedom may bring unrelated signs closer; the learned models can weight informative dimensions while DTW
-weights all dimensions equally; and signer variation, which a model trained on 31 signers can absorb, is a direct cost for
+weights all dimensions equally; and signer variation, which a model trained on \nSignersTrain{} signers can absorb, is a direct cost for
 template matching. Adding hand location and the preprocessing choices narrowed the gap only partly. We therefore make no causal
 claim about the mechanism.
 
