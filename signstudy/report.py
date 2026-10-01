@@ -122,7 +122,8 @@ def figure_main(ci, vocabs):
     fig.tight_layout()
     C.FIGURES.mkdir(exist_ok=True)
     for ext in ("pdf", "png"):
-        fig.savefig(C.FIGURES / f"accuracy_vs_k{SUF}.{ext}", dpi=200)
+        fig.savefig(C.FIGURES / f"accuracy_vs_k{SUF}.{ext}", dpi=200,
+                    metadata={"CreationDate": None, "Creator": None, "Producer": None} if ext == "pdf" else {"Software": None})
     plt.close(fig)
 
 
