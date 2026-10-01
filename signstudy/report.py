@@ -238,7 +238,13 @@ def tuning_table(led):
     return df
 
 
-def legacy_macros(ci, led):
+def legacy_macros(ci, led, df=None):
+    if df is not None:
+        g = df[(df.method == "dtw1nn") & (df.vocab == 50) & (df.k == "10") & (df.seed == 0)]
+        if len(g):
+            led.add("accDtwSeedZeroVFiftyKTen", pct((g["rank"] <= 1).mean()),
+                    "top-1 %, dtw1nn, vocabulary 50, k=10, draw seed 0 only (like-for-like with the FastDTW and legacy rows)",
+                    "results/raw/test/dtw1nn.csv.gz")
     for m in ("fastdtw_r1", "legacy_fastdtw"):
         g = ci[(ci.method == m) & (ci.vocab == 50) & (ci.k == "10")]
         if g.empty:
@@ -323,7 +329,7 @@ def main():
     crossover(ci, led)
     paired_table(tab, led, vocabs)
     tuning_table(led)
-    legacy_macros(ci, led)
+    legacy_macros(ci, led, df)
     group_accuracy(df, led)
     latex_tables(d)
     ablation_table(led)
