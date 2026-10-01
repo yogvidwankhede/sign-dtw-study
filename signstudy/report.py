@@ -313,18 +313,55 @@ def data_and_compute_stats(led, vocab=50):
 
 
 def ablation_table(led):
-    f = RAW / "ablation.csv.gz"
-    if not f.exists():
+    """Feature sets, missing-hand handling, handedness (pre-registered) plus the exploratory drop-frames supplement."""
+    parts = []
+    for name, tag in (("ablation", "prereg"), ("ablation_drop", "exploratory")):
+        f = RAW / f"{name}.csv.gz"
+        if f.exists():
+            d = pd.read_csv(f)
+            d["part"] = tag
+            parts.append(d)
+    if not parts:
         return None
-    df = pd.read_csv(f)
+    df = pd.concat(parts, ignore_index=True)
     df["k"] = df["k"].astype(str)
     df["seed"] = df["seed"].fillna(-1).astype(int)
     ci = S.accuracy_ci(S.signer_table(df))
+    part = df.groupby(["fset", "missing", "dominant"]).part.first().reset_index()
+    ci = ci.merge(part, on=["fset", "missing", "dominant"], how="left")
     ci["setting"] = ci.apply(lambda r: f"{r.fset}/{r.missing}/{'dominant' if r.dominant else 'slots'}", axis=1)
     ci["cell"] = ci.apply(lambda r: f"{pct(r.acc):.1f} [{pct(r.lo):.1f}, {pct(r.hi):.1f}]", axis=1)
     ci.to_csv(TABLES / "ablation.csv", index=False)
-    p = ci.pivot_table(index="setting", columns=["method", "k"], values="cell", aggfunc="first")
-    (TABLES / "ablation.md").write_text(p.to_markdown())
+    (TABLES / "ablation.md").write_text(ci.pivot_table(index=["part", "setting"], columns=["method", "k"], values="cell", aggfunc="first").to_markdown())
+    fw = {"F1": "FOne", "F2": "FTwo", "F3": "FThree", "F4": "FFour", "F5": "FFive", "F6": "FSix"}
+    mw = {"zero": "Zero", "ffill": "Ffill", "drop": "Drop"}
+    for r in ci.itertuples():
+        if r.method not in MW or r.k not in KW:
+            continue
+        key = f"abl{MW[r.method]}{fw[r.fset]}{mw[r.missing]}{'Dominant' if r.dominant else 'Slots'}K{KW[r.k]}"
+        led.add(key, pct(r.acc), f"top-1 %, {r.method}, features {r.fset}, missing={r.missing}, {'dominant-hand' if r.dominant else 'MediaPipe'} slots, vocabulary 50, k={r.k} ({r.part})", "results/tables/ablation.csv")
+    for m in ("dtw1nn", "euclid1nn", "cnn1d", "bigru", "transformer"):
+        for k in ("5", "full"):
+            g = ci[(ci.method == m) & (ci.k == k)]
+            if len(g):
+                best = g.sort_values("acc").iloc[-1]
+                led.add(f"ablBest{MW[m]}K{KW[k]}", pct(best.acc), f"best top-1 % of {m} over all ablation settings, vocabulary 50, k={k}", "results/tables/ablation.csv")
+                led.add(f"ablBestSet{MW[m]}K{KW[k]}", best.setting, f"setting achieving that best value for {m}, k={k}", "results/tables/ablation.csv", fmt="{}")
+    # compact LaTeX table: DTW and CNN, k=5 and all
+    order = ["F1/zero/slots", "F1/ffill/slots", "F1/drop/slots", "F1/zero/dominant", "F2/zero/slots", "F3/zero/slots", "F4/zero/slots",
+             "F5/zero/slots", "F6/zero/slots", "F3/drop/slots", "F4/drop/slots", "F5/drop/slots", "F4/drop/dominant"]
+    lines = ["\\begin{tabular}{lrrrr}", "\\toprule", " & \\multicolumn{2}{c}{$k=5$} & \\multicolumn{2}{c}{$k=$ all} \\\\",
+             "Setting (features/missing/hand slots) & DTW & CNN & DTW & CNN \\\\", "\\midrule"]
+    for st in order:
+        cells = []
+        for k in ("5", "full"):
+            for m in ("dtw1nn", "cnn1d"):
+                g = ci[(ci.setting == st) & (ci.method == m) & (ci.k == k)]
+                cells.append("--" if g.empty else f"{pct(g.acc.iloc[0]):.1f}")
+        mark = "$^\\dagger$" if "drop" in st and st != "F1/drop/slots" else ""
+        lines.append(st.replace("_", "\\_") + mark + " & " + " & ".join(cells) + " \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}"]
+    (TABLES / "ablation.tex").write_text("\n".join(lines) + "\n")
     return ci
 
 
@@ -342,7 +379,7 @@ def per_sign(df, vocab, signs):
     conf[["true", "predicted", "n"]].to_csv(TABLES / "top_confusions_dtw_full.csv", index=False)
 
 
-def timing_table():
+def timing_table(led=None):
     if SPLIT != "test":
         return None
     parts = [pd.read_csv(f) for f in sorted((C.RESULTS / "timing").glob("latency_threads*.csv"))]
@@ -351,6 +388,21 @@ def timing_table():
     t = pd.concat(parts)
     t.to_csv(TABLES / "latency.csv", index=False)
     (TABLES / "latency.md").write_text(t.round(3).to_markdown(index=False))
+    if led is not None:
+        one = t[t.threads == 1]
+        def get(method, k=None):
+            g = one[(one.method == method) & ((one.k.astype(str) == str(k)) if k is not None else True)]
+            return g.iloc[0] if len(g) else None
+        for method, name in (("dtw1nn", "Dtw"), ("euclid1nn", "Euclid"), ("fastdtw_r1", "FastDtw")):
+            for k, kw in (("10", "KTen"), ("full", "KAll")):
+                r = get(method, k)
+                if r is not None:
+                    led.add(f"lat{name}{kw}", r.median_ms, f"median per-query latency ms, {method}, {int(r.refs)} references, 1 thread, vocabulary 50", "results/timing/latency_threads1.csv")
+                    led.add(f"latP{name}{kw}", r.p95_ms, f"95th percentile per-query latency ms, same setting", "results/timing/latency_threads1.csv")
+        for method, name in (("cnn1d_cpu", "Cnn"), ("bigru_cpu", "Gru"), ("transformer_cpu", "Trans")):
+            r = get(method)
+            if r is not None:
+                led.add(f"lat{name}", r.median_ms, f"median forward-pass ms, {method}, 1 thread", "results/timing/latency_threads1.csv", fmt="{:.2f}")
     return t
 
 
@@ -377,7 +429,7 @@ def main():
     latex_tables(d)
     ablation_table(led)
     per_sign(df, max(vocabs), signs)
-    timing_table()
+    timing_table(led)
     led.add("nVocabMax", max(vocabs), "largest vocabulary evaluated", "results/tables/main_top1.csv", fmt="{:d}")
     led.add("nTestSigners", int(tab.signer.nunique()), "test signers (bootstrap clusters)", "results/raw/test/dtw1nn.csv.gz", fmt="{:d}")
     for m in ("dtw1nn", "euclid1nn", "cnn1d", "bigru", "transformer", "dba_proto"):
