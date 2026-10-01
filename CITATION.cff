@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it. Author details are to be completed by the author before release."
+title: "signstudy: DTW versus learned models for isolated sign recognition from hand landmarks"
+type: software
+authors:
+  - family-names: "Wankhede"
+    given-names: "Yogvid"
+license: MIT
+references:
+  - type: conference-paper
+    title: "PopSign ASL v1.0: An Isolated American Sign Language Dataset Collected via Smartphones"
+    authors:
+      - family-names: "Starner"
+        given-names: "Thad"
+    year: 2023
+    doi: "10.52202/075280-0011"
+    collection-title: "Advances in Neural Information Processing Systems 36"

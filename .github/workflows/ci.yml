@@ -1,0 +1,19 @@
+name: CI
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test-and-reproduce:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: python -m pytest -q tests
+      # Regenerate every table and number from the committed per-query results and fail on any difference.
+      - run: python -m signstudy.report
+      - run: git diff --exit-code -- results/tables paper/numbers.tex CLAIMS.md
