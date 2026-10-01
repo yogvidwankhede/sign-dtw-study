@@ -15,7 +15,7 @@ KS = list(C.REFS_PER_SIGN)
 SEEDS = list(C.SEEDS)
 RADII = (3, 5, 8, -1)
 LR_GRID = (1e-3, 3e-4)
-EPOCH_GRID = (15, 30)
+EPOCH_GRID = (20, 80)
 MODELS = ("cnn1d", "bigru", "transformer")
 TUNED = C.RESULTS / "tuned.json"
 
@@ -34,27 +34,64 @@ def vocabs_up_to(n_avail):
     return [v for v in C.VOCAB_SIZES if v <= n_avail]
 
 
+MISSING = ("zero", "ffill", "drop")
+SCALES = ("raw", "std")
+FAMILIES = ("dtw", "euclid") + MODELS
+
+
+def _conds(signs):
+    return {m: X.build_condition(signs, "F1", m) for m in MISSING}
+
+
+def _pick(results):
+    """results: list of (config dict, val top-1) in preference order; the first best one wins (ties -> earlier)."""
+    best = max(range(len(results)), key=lambda i: (results[i][1], -i))
+    return results[best][0], [(c, a) for c, a in results]
+
+
+def _top1(df):
+    return float(R.accuracy(df)["top1"].iloc[0])
+
+
 def stage_tune(n_tune):
-    """Choose DTW radius and learned-model hyperparameters on VALIDATION signers only."""
-    cond = X.build_condition(C.vocab(n_tune))
-    out = {"n_tune": n_tune, "k": 10, "seed": 0, "radius": {}, "models": {}}
-    for r in RADII:
-        d = R.dtw_dist(cond, "val", r)
-        acc = R.accuracy(R.eval_distance(cond, "val", d, "dtw", [n_tune], [10], [0]))["top1"].iloc[0]
-        out["radius"][str(r)] = float(acc)
-        print("radius", r, "val top1", round(acc, 4), flush=True)
-    best = max(RADII, key=lambda r: (out["radius"][str(r)], -(r if r > 0 else 10**6)))
-    out["chosen_radius"] = best
-    for m in MODELS:
-        scores = {}
-        for lr in LR_GRID:
-            for ep in EPOCH_GRID:
-                df, _ = R.eval_learned(cond, "val", m, [n_tune], [10], [0], lr=lr, epochs=ep)
-                scores[f"lr={lr},epochs={ep}"] = (float(R.accuracy(df)["top1"].iloc[0]), lr, ep)
-        key = max(scores, key=lambda s: scores[s][0])
-        out["models"][m] = {"chosen": key, "lr": scores[key][1], "epochs": scores[key][2],
-                            "grid": {k: v[0] for k, v in scores.items()}}
-        print(m, "chose", key, round(scores[key][0], 4), flush=True)
+    """Choose every family's preprocessing and hyperparameters on VALIDATION signers only (vocab n_tune, k=10, seed 0)."""
+    signs = C.vocab(n_tune)
+    conds = _conds(signs)
+    out = {"n_tune": n_tune, "k": 10, "seed": 0, "families": {}, "grids": {}}
+
+    def run_dtw(cond, scale, r):
+        if scale == "raw":
+            return R.eval_distance(cond, "val", R.dtw_dist(cond, "val", r), "x", [n_tune], [10], [0])
+        return R.eval_scaled(cond, "val", "x", [n_tune], [10], [0], kind="dtw", radius=r)
+
+    res = []
+    for m in MISSING:
+        for sc in SCALES:
+            for r in RADII:
+                res.append((dict(missing=m, scale=sc, radius=r), _top1(run_dtw(conds[m], sc, r))))
+                print("dtw", res[-1], flush=True)
+    out["families"]["dtw"], out["grids"]["dtw"] = _pick(res)
+
+    res = []
+    for m in MISSING:
+        for sc in SCALES:
+            if sc == "raw":
+                df = R.eval_distance(conds[m], "val", R.euclid_dist(conds[m], "val"), "x", [n_tune], [10], [0])
+            else:
+                df = R.eval_scaled(conds[m], "val", "x", [n_tune], [10], [0], kind="euclid")
+            res.append((dict(missing=m, scale=sc), _top1(df)))
+            print("euclid", res[-1], flush=True)
+    out["families"]["euclid"], out["grids"]["euclid"] = _pick(res)
+
+    for mod in MODELS:
+        res = []
+        for m in MISSING:
+            for lr in LR_GRID:
+                for ep in EPOCH_GRID:
+                    df, _ = R.eval_learned(conds[m], "val", mod, [n_tune], [10], [0], lr=lr, epochs=ep)
+                    res.append((dict(missing=m, lr=lr, epochs=ep), _top1(df)))
+                    print(mod, res[-1], flush=True)
+        out["families"][mod], out["grids"][mod] = _pick(res)
     out["provenance"] = R.provenance() if R.git("tag", "--list", "prereg-v1") else {}
     TUNED.parent.mkdir(exist_ok=True)
     TUNED.write_text(json.dumps(out, indent=1))
@@ -65,29 +102,44 @@ def _tuned():
     return json.loads(TUNED.read_text())
 
 
+def _dtw_family(cond, split, cfg, vocabs, label="dtw1nn"):
+    if cfg["scale"] == "raw":
+        d = R.dtw_dist(cond, split, cfg["radius"])
+        return R.eval_distance(cond, split, d, label, vocabs, KS, SEEDS, extra=dict(radius=cfg["radius"], scale="raw"))
+    return R.eval_scaled(cond, split, label, vocabs, KS, SEEDS, kind="dtw", radius=cfg["radius"]).assign(scale="std")
+
+
+def _euclid_family(cond, split, cfg, vocabs, label="euclid1nn"):
+    if cfg["scale"] == "raw":
+        return R.eval_distance(cond, split, R.euclid_dist(cond, split), label, vocabs, KS, SEEDS, extra=dict(scale="raw"))
+    return R.eval_scaled(cond, split, label, vocabs, KS, SEEDS, kind="euclid").assign(scale="std")
+
+
 def stage_main(split, n_max, which):
     if split == "test":
         R.guard_test_split()
-    t = _tuned()
-    cond = X.build_condition(C.vocab(n_max))
+    t = _tuned()["families"]
+    signs = C.vocab(n_max)
     vocabs = vocabs_up_to(n_max)
-    radius = t["chosen_radius"]
     outs = []
     if "dtw" in which:
-        d = R.dtw_dist(cond, split, radius)
-        outs.append(R.eval_distance(cond, split, d, "dtw1nn", vocabs, KS, SEEDS, extra=dict(radius=radius)))
+        cond = X.build_condition(signs, "F1", t["dtw"]["missing"])
+        outs.append(_dtw_family(cond, split, t["dtw"], vocabs))
         R.save(outs[-1], "dtw1nn", split)
     if "euclid" in which:
-        d = R.euclid_dist(cond, split)
-        outs.append(R.eval_distance(cond, split, d, "euclid1nn", vocabs, KS, SEEDS))
+        cond = X.build_condition(signs, "F1", t["euclid"]["missing"])
+        outs.append(_euclid_family(cond, split, t["euclid"], vocabs))
         R.save(outs[-1], "euclid1nn", split)
     if "dba" in which:
-        outs.append(R.eval_prototypes(cond, split, vocabs, KS, SEEDS, radius=radius))
+        cond = X.build_condition(signs, "F1", t["dtw"]["missing"])
+        outs.append(R.eval_prototypes(cond, split, vocabs, KS, SEEDS, radius=t["dtw"]["radius"],
+                                      standardise=t["dtw"]["scale"] == "std"))
         R.save(outs[-1], "dba_proto", split)
     for m in MODELS:
         if m not in which:
             continue
-        hp = t["models"][m]
+        hp = t[m]
+        cond = X.build_condition(signs, "F1", hp["missing"])
         df, tm = R.eval_learned(cond, split, m, vocabs, KS, SEEDS, lr=hp["lr"], epochs=hp["epochs"])
         outs.append(df)
         R.save(df, m, split)
@@ -96,24 +148,30 @@ def stage_main(split, n_max, which):
 
 
 def stage_ablate(split, n_abl):
+    """Feature sets, missing-hand handling and handedness at vocabulary n_abl, k in {5, full}; each family keeps its
+    tuned scaling / band / learning rate, only the factor under study changes."""
     if split == "test":
         R.guard_test_split()
-    t = _tuned()
+    t = _tuned()["families"]
     signs = C.vocab(n_abl)
-    ks = [5, "full"]
     rows = []
     settings = [(f, "zero", False) for f in ("F1", "F2", "F3", "F4", "F5", "F6")]
     settings += [("F1", "ffill", False), ("F1", "drop", False), ("F1", "zero", True)]
-    for fset, missing, dom in settings:
-        cond = X.build_condition(signs, fset, missing, dom)
-        d = R.dtw_dist(cond, split, t["chosen_radius"])
-        rows.append(R.eval_distance(cond, split, d, "dtw1nn", [n_abl], ks, SEEDS, extra=dict(radius=t["chosen_radius"])))
-        rows.append(R.eval_distance(cond, split, R.euclid_dist(cond, split), "euclid1nn", [n_abl], ks, SEEDS))
-        for m in MODELS:
-            hp = t["models"][m]
-            df, _ = R.eval_learned(cond, split, m, [n_abl], ks, SEEDS, lr=hp["lr"], epochs=hp["epochs"])
-            rows.append(df)
-        R.save(pd.concat(rows, ignore_index=True), "ablation", split)
+    ks = [5, "full"]
+    global KS
+    saved, KS = KS, ks
+    try:
+        for fset, missing, dom in settings:
+            cond = X.build_condition(signs, fset, missing, dom)
+            rows.append(_dtw_family(cond, split, t["dtw"], [n_abl]))
+            rows.append(_euclid_family(cond, split, t["euclid"], [n_abl]))
+            for m in MODELS:
+                hp = t[m]
+                df, _ = R.eval_learned(cond, split, m, [n_abl], ks, SEEDS, lr=hp["lr"], epochs=hp["epochs"])
+                rows.append(df)
+            R.save(pd.concat(rows, ignore_index=True), "ablation", split)
+    finally:
+        KS = saved
     return pd.concat(rows, ignore_index=True)
 
 

@@ -107,3 +107,11 @@ kiss test 130 videos 92.2 s
 first train 523 videos 496.2 s
 first val 155 videos 125.6 s
 first test 154 videos 107.7 s
+clean train 462 videos 466.0 s
+clean val 125 videos 103.3 s
+clean test 154 videos 91.4 s
+animal train 542 videos 537.8 s
+animal val 149 videos 168.6 s
+animal test 134 videos 107.1 s
+happy train 552 videos 526.2 s
+happy val 159 videos 136.5 s

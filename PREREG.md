@@ -52,36 +52,49 @@ Per hand, per frame. A sequence is trimmed from the first to the last frame wher
 | F5 | F4 + upper-body pose (shoulders, elbows, wrists; same normalisation) |
 | F6 | F5 + face contour landmarks (128 points, same normalisation); ablation only, never released |
 
-Main grid: F1 for every method (the repository's existing features). Feature ablations (F1-F6, all methods listed in
-section 7) run at vocabulary 50 and k in {5, full}.
+Main grid: F1 for every method (the repository's existing features). Feature ablations (F1-F6, every method of section 4 except FastDTW, legacy and soft-DTW) run at vocabulary 50 and k in {5, full},
+each family keeping its tuned scaling, band and learning rate.
 
-Missing hand in a frame: main setting is zero-fill. Ablation: carry the last detection forward; drop the frame.
+Missing hand in a frame: zero-fill, carry the last detection forward (ffill), or drop frames with no hand; chosen per family
+on validation (section 4) and also reported as an ablation.
 Handedness: main setting uses MediaPipe's left/right slots as given; ablation puts the hand with the larger total
 wrist displacement in slot 1 (dominant-hand canonicalisation). One- versus two-handed: a sign is "two-handed" if both
 hands are detected in at least 50% of the hand-present frames across its train videos; accuracy is reported by group.
 
-Scaling: DTW and Euclidean nearest neighbour use the raw feature values. The learned models standardise each
-dimension with the mean and standard deviation of their own training subset (never val or test data).
+Scaling: the learned models standardise each dimension with the mean and standard deviation of their own training
+subset (never val or test data). DTW and Euclidean 1-NN get the same standardisation as an option (dividing by the
+standard deviation of the selected references; centring cancels in differences) and keep it only if validation prefers it.
 
 Temporal handling: DTW methods use the trimmed sequence downsampled by 2 (variable length). Euclidean nearest
 neighbour and the learned models use the trimmed sequence linearly resampled to 32 frames.
 
 ## 4. Methods
 
-1. **DTW-1NN**: DTW with Euclidean local cost, nearest reference decides (tslearn 0.9.0). Sakoe-Chiba radius chosen on
-   validation from {3, 5, 8, unconstrained} frames at vocabulary 50, k=10, draw seed 0 (ties go to the smaller radius).
+Each family picks its own preprocessing on **validation signers only** (vocabulary 50, k=10, draw seed 0), from the
+grids below, so that no method is handicapped by an arbitrary default. Ties go to the earlier option in the order listed.
+The features themselves stay F1 in the main grid.
+
+| family | chosen on validation from |
+|---|---|
+| DTW | missing hands {zero, ffill, drop} x scaling {raw, per-dimension standard deviation of the selected references} x Sakoe-Chiba radius {3, 5, 8, unconstrained} frames |
+| Euclidean-1NN | missing hands x scaling |
+| 1D-CNN, BiGRU, Transformer | missing hands x learning rate {1e-3, 3e-4} x epoch budget {20, 80} |
+
+1. **DTW-1NN**: DTW with Euclidean local cost, nearest reference decides (own compiled implementation, tested against
+   tslearn 0.9.0). The naive default (zero-fill, raw, unconstrained) is also reported as a reference row.
 2. **FastDTW-1NN** (radius 1, fastdtw 0.3.4): latency and accuracy only, on a fixed subsample (vocabulary 50, k=10).
 3. **Legacy DTW**: the original repository's pipeline (per-hand DTW over detected frames only, hand-set must match,
    normalised coordinates, FastDTW), as a reference point.
-4. **DBA prototype**: one DTW barycentre per sign from its k references (30 iterations), nearest prototype decides.
-5. **Soft-DTW prototype**: soft-DTW barycentre per sign (gamma chosen on validation from {0.1, 1.0}); exploratory.
+4. **DBA prototype**: one DTW barycentre per sign from its k references (tslearn 0.9.0 default initialisation, 30
+   iterations), nearest prototype by DTW, using the DTW family's chosen preprocessing.
+5. **Soft-DTW prototype**: exploratory, run only if time allows; otherwise reported as not run.
 6. **Euclidean-1NN** on the 32-frame resampled flattened features.
-7. **1D-CNN**, 8. **BiGRU**, 9. **small Transformer encoder** (architectures in `signstudy/models.py`): cross-entropy,
-   AdamW, a fixed number of gradient steps (no early stopping, so validation labels are not used for training),
-   hyperparameters chosen on validation at vocabulary 50, k=10, seed 0 from a small fixed grid, then frozen.
-   Main grid has no data augmentation; one extra arm with light augmentation (time stretch, noise, hand scale) at
-   vocabulary 50 checks that the learned models are not a strawman.
-   Seeds 0, 1, 2 (subset draw and initialisation).
+7. **1D-CNN**, 8. **BiGRU**, 9. **small Transformer encoder** (architectures in `signstudy/models.py`): cross-entropy
+   with label smoothing 0.05, AdamW, one-cycle schedule, batch 64, and a fixed number of gradient steps
+   steps = min(max(ceil(epochs x N / 64), 200), 4000) for N training examples (no early stopping, so validation labels
+   are not used for training). The 4000-step cap means the largest conditions get only a few epochs; this is a limitation.
+   Main grid has no data augmentation; one extra arm with light augmentation (time stretch, noise, scale) at vocabulary 50
+   checks that the learned models are not a strawman. Seeds 0, 1, 2 (subset draw and initialisation).
 
 ## 5. Metrics and uncertainty
 
@@ -122,4 +135,14 @@ changes a number.
 
 ## Deviations
 
-(none yet)
+Revisions made after a validation-only smoke test on 4 signs and **before any test-split scoring** (30 Sep 2026):
+
+1. Added per-dimension standardisation as a DTW/Euclidean option, because the learned models are standardised and a
+   scale mismatch could have handicapped DTW.
+2. Added missing-hand handling (zero / ffill / drop) to the validation selection for every family, because the smoke test
+   suggested zero-filling creates jumps DTW cannot ignore while the original repository dropped those frames.
+3. Replaced the 600-step floor of the learned-model step rule by 200, and the epoch grid by {20, 80}, because with the
+   floor at 600 the epoch choice had no effect for datasets under about 1,300 examples.
+4. DBA uses tslearn's default deterministic initialisation (the installed version has no random initialisation option).
+5. Clarified that the "all methods" ablation covers the methods of section 4 (the original sentence pointed at section 7).
+

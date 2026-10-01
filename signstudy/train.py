@@ -72,5 +72,5 @@ def fit_predict(name, train_x, train_y, eval_xs, n_cls, seed, steps, lr=1e-3, ba
     return outs, train_s, model
 
 
-def steps_for(n_train, batch=64, epochs=30, lo=600, hi=4000):
+def steps_for(n_train, batch=64, epochs=20, lo=200, hi=4000):
     return int(min(max(np.ceil(epochs * n_train / batch), lo), hi))
