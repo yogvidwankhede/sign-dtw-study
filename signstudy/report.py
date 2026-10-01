@@ -27,6 +27,15 @@ MARK = {"dtw1nn": "o", "euclid1nn": "s", "dba_proto": "^", "cnn1d": "v", "bigru"
 LABEL = {"dtw1nn": "DTW 1-NN", "euclid1nn": "Euclidean 1-NN", "dba_proto": "DBA prototype", "cnn1d": "1D-CNN",
          "bigru": "BiGRU", "transformer": "Transformer", "bigru_aug": "BiGRU + aug."}
 K_ORDER = [1, 2, 5, 10, 20, "full"]
+NUMW = {4: "Four", 10: "Ten", 50: "Fifty", 100: "Hundred", 250: "TwoFifty"}
+KW = {"1": "One", "2": "Two", "5": "Five", "10": "Ten", "20": "Twenty", "full": "All"}
+MW = {"dtw1nn": "Dtw", "euclid1nn": "Euclid", "dba_proto": "Dba", "cnn1d": "Cnn", "bigru": "Gru", "transformer": "Trans",
+      "bigru_aug": "GruAug", "cnn1d_aug": "CnnAug", "transformer_aug": "TransAug", "fastdtw_r1": "FastDtw"}
+
+
+def nm(prefix, method, v, k):
+    """Letter-only LaTeX macro name, e.g. accCnnVFiftyKOne."""
+    return f"{prefix}{MW[method]}V{NUMW[int(v)]}K{KW[str(k)]}"
 
 
 def _commit():
@@ -56,7 +65,10 @@ class Ledger:
         self.rows, self.macros = [], {}
 
     def add(self, macro, value, text, source, fmt="{:.1f}"):
-        self.macros[macro] = fmt.format(value) if isinstance(value, (int, float, np.floating)) else str(value)
+        assert macro.isalpha(), f"macro name must be letters only: {macro}"
+        new = fmt.format(value) if isinstance(value, (int, float, np.floating)) else str(value)
+        assert self.macros.get(macro, new) == new, f"duplicate macro with different value: {macro}"
+        self.macros[macro] = new
         self.rows.append((macro, self.macros[macro], text, source))
 
     def write(self, commit):
@@ -161,7 +173,7 @@ def crossover(ci, led):
     for v in sorted(df.vocab.unique()):
         g = df[df.vocab == v]
         ahead = [k for k in map(str, K_ORDER) if k in set(g.k) and bool(g[g.k == k].learned_ahead.iloc[0])]
-        led.add(f"crossoverV{v}", ahead[0] if ahead else "none",
+        led.add(f"crossover{NUMW[int(v)]}", ahead[0] if ahead else "none",
                 f"smallest k where the best learned model's point estimate is at least DTW's, vocabulary {v} (exploratory)",
                 "results/tables/crossover.csv", fmt="{}")
     return df
@@ -182,10 +194,9 @@ def paired_table(tab, led, vocabs):
         return df
     df.to_csv(TABLES / "paired_vs_dtw.csv", index=False)
     for r in df.itertuples():
-        key = f"{r.a}V{r.vocab}K{r.k}".replace("_", "")
-        led.add(f"d{key}", pct(r.diff), f"{r.a} minus dtw1nn, top-1 percentage points, vocabulary {r.vocab}, k={r.k} (exploratory)", "results/tables/paired_vs_dtw.csv")
-        led.add(f"dlo{key}", pct(r.lo), f"lower 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
-        led.add(f"dhi{key}", pct(r.hi), f"upper 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
+        led.add(nm("dif", r.a, r.vocab, r.k), pct(r.diff), f"{r.a} minus dtw1nn, top-1 percentage points, vocabulary {r.vocab}, k={r.k} (exploratory)", "results/tables/paired_vs_dtw.csv")
+        led.add(nm("difLo", r.a, r.vocab, r.k), pct(r.lo), f"lower 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
+        led.add(nm("difHi", r.a, r.vocab, r.k), pct(r.hi), f"upper 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
     return df
 
 
@@ -273,10 +284,9 @@ def main():
                 r = d[(d.method == m) & (d.vocab == v) & (d.k == k)]
                 if not r.empty:
                     r = r.iloc[0]
-                    key = f"{m}V{v}K{k}".replace("_", "")
-                    led.add(f"acc{key}", pct(r.acc), f"top-1 %, {m}, vocabulary {v}, k={k}", "results/tables/main_top1.csv")
-                    led.add(f"lo{key}", pct(r.lo), f"95% CI lower, {m}, vocabulary {v}, k={k}", "results/tables/main_top1.csv")
-                    led.add(f"hi{key}", pct(r.hi), f"95% CI upper, {m}, vocabulary {v}, k={k}", "results/tables/main_top1.csv")
+                    led.add(nm("acc", m, v, k), pct(r.acc), f"top-1 %, {m}, vocabulary {v}, k={k}", "results/tables/main_top1.csv")
+                    led.add(nm("accLo", m, v, k), pct(r.lo), f"95% CI lower, {m}, vocabulary {v}, k={k}", "results/tables/main_top1.csv")
+                    led.add(nm("accHi", m, v, k), pct(r.hi), f"95% CI upper, {m}, vocabulary {v}, k={k}", "results/tables/main_top1.csv")
     led.write(_commit())
     print("report written:", len(led.rows), "numbers")
 
