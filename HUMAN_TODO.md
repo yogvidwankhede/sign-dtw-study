@@ -33,3 +33,13 @@ Nothing here can be done by the code or by an assistant. Items marked (blocking)
   Decide with your co-authors whether to contact Springer about a correction. The repo-side attribution fix is on the
   `attribution-fix` branch of Sign_Language_Interpreter.
 - Edit your Google Scholar and ORCID profiles yourself (steps were given in the chat summary).
+
+## Added after the experiments (see `REVIEW.md` for the full audit and fix list)
+- (blocking if the venue is double-blind) Produce an anonymous mirror: the git history contains your name and email; the paper,
+  `LICENSE`, `CITATION.cff` and the self-citation identify you. Do not push this history to a public or reviewer-visible place.
+- Decide whether to extend the study before submitting: vocabularies 100-250 (the extractor can continue: `make extract VOCAB=100`,
+  about 9-10 hours per 50 signs on this machine), a second dataset, and the stronger baselines listed in `REVIEW.md`.
+- Re-run `python scripts/check_rerun.py` and `python -m signstudy.report` after any change; CI will fail on a mismatch once the repo is on GitHub.
+- The final paper text must be reviewed by you sentence by sentence; every number is generated, but the interpretations are drafts.
+- If you push, the repository is about 2 MB (cache files were removed from history); the landmark cache (`data/landmarks`, about 3 GB)
+  stays local. Release hand and pose landmarks with `scripts/package_landmarks.py` only after confirming the CC BY 4.0 attribution text.
