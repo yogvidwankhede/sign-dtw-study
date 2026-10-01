@@ -200,7 +200,7 @@ def paired_table(tab, led, vocabs):
     learned = df[df.a != "euclid1nn"]
     led.add("nPairedLearned", len(learned), "paired comparisons of a learned model with DTW (3 models x k x vocabulary)", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
     led.add("nPairedLearnedExcl", int(((learned.lo > 0) | (learned.hi < 0)).sum()), "of those, 95% intervals excluding zero", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
-    led.add("nPairedLearnedAhead", int((learned.diff > 0).sum()), "of those, learned model's point estimate above DTW", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
+    led.add("nPairedLearnedAhead", int((learned["diff"] > 0).sum()), "of those, learned model's point estimate above DTW", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
     for r in df.itertuples():
         led.add(nm("dif", r.a, r.vocab, r.k), pct(r.diff), f"{r.a} minus dtw1nn, top-1 percentage points, vocabulary {r.vocab}, k={r.k} (exploratory)", "results/tables/paired_vs_dtw.csv")
         led.add(nm("difLo", r.a, r.vocab, r.k), pct(r.lo), f"lower 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
