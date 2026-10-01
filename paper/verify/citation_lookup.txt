@@ -1,0 +1,25 @@
+[arXiv 1910.11006] li2020wlasl: Word-level Deep Sign Language Recognition from Video: A New Large-scale Dataset and Methods Comparison | Dongxu Li et al. | 2019-10-24
+[arXiv 1812.01053] vaezi2019msasl: MS-ASL: A Large-Scale Data Set and Benchmark for Understanding American Sign Language | Hamid Reza Vaezi Joze et al. | 2018-12-03
+[arXiv 2304.05934] desai2023aslcitizen: ASL Citizen: A Community-Sourced Dataset for Advancing Isolated Sign Language Recognition | Aashaka Desai et al. | 2023-04-12
+[arXiv 2310.17429] ronchetti2016lsa64: LSA64: An Argentinian Sign Language Dataset | Franco Ronchetti et al. | 2023-10-26
+[arXiv 2103.08833] jiang2021slgcn: Skeleton Aware Multi-modal Sign Language Recognition | Songyao Jiang et al. | 2021-03-16
+[arXiv 2502.20171] vandendriessche2025onesh: Representing Signs as Signs: One-Shot ISLR to Facilitate Functional Sign Language Technologies | Toon Vandendriessche et al. | 2025-02-27
+[arXiv 1406.4757] bagnall2014nn: An Experimental Evaluation of Nearest Neighbour Time Series Classification | Anthony Bagnall et al. | 2014-06-18
+[arXiv 1809.04356] fawaz2019dl: Deep learning for time series classification: a review | Hassan Ismail Fawaz et al. | 2018-09-12
+[arXiv 1703.01541] cuturi2017softdtw: Soft-DTW: a Differentiable Loss Function for Time-Series | Marco Cuturi et al. | 2017-03-05
+[arXiv 2403.02563] desai2024biases: Systemic Biases in Sign Language AI Research: A Deaf-Led Call to Reevaluate Research Agendas | Aashaka Desai et al. | 2024-03-05
+[arXiv 1906.08172] lugaresi2019mediapipe: LOOKUP FAILED (The read operation timed out)
+[arXiv 2006.10214] zhang2020mphands: MediaPipe Hands: On-device Real-time Hand Tracking | Fan Zhang et al. | 2020-06-18
+[arXiv 2312.xxxx] starner2023popsign: LOOKUP FAILED (HTTP Error 429: Unknown Error)
+[arXiv 2110.05111] bohacek2022spoter: LOOKUP FAILED (HTTP Error 429: Unknown Error)
+[doi 10.1007/978-981-97-1488-9_7] mankar2024: Real-Time Sign Language Interpreter Using MediaPipe, Dynamic Time Warping, and NLP | Mankar et al. | Algorithms for Intelligent Systems | 2024
+[doi 10.1145/3436996] bragg2021fate: The FATE Landscape of Sign Language AI Datasets | Bragg et al. | ACM Transactions on Accessible Computing | 2021
+[doi 10.1145/3308561.3353774] bragg2019assets: Sign Language Recognition, Generation, and Translation | Bragg et al. | Proceedings of the 21st International ACM SIGACCESS Conference on Computers and Accessibility | 2019
+[doi 10.1145/3597638.3608395] tran2023assets: Understanding Personalized Accessibility through Teachable AI: Designing and Evaluating Find My Things for People who are Blind or Low Vision | Morrison et al. | The 25th International ACM SIGACCESS Conference on Computers and Accessibility | 2023
+[doi 10.1016/j.patcog.2010.09.013] petitjean2011dba: A global averaging method for dynamic time warping, with applications to clustering | Petitjean et al. | Pattern Recognition | 2011
+[doi 10.1109/TASSP.1978.1163055] sakoe1978: Dynamic programming algorithm optimization for spoken word recognition | Sakoe et al. | IEEE Transactions on Acoustics, Speech, and Signal Processing | 1978
+[doi 10.3233/IDA-2007-11508] salvador2007fastdtw: Toward accurate dynamic time warping in linear time and space | Salvador et al. | Intelligent Data Analysis | 2007
+[doi 10.3390/s20143896] saggio2020: Deep Physiological Model for Blood Glucose Prediction in T1DM Patients | Munoz-Organero et al. | Sensors | 2020
+[doi 10.1109/IJCNN52387.2021.9534336] fink2021lsfb: LSFB-CONT and LSFB-ISOL: Two New Datasets for Vision-Based Sign Language Recognition | Fink et al. | 2021 International Joint Conference on Neural Networks (IJCNN) | 2021
+[doi 10.1111/j.1467-9868.2007.00593.x] field2007cluster: Bootstrapping Clustered Data | Field et al. | Journal of the Royal Statistical Society Series B: Statistical Methodology | 2007
+[doi 10.5753/webmedia.2024.241666] arcanjo2024: LOOKUP FAILED (HTTP Error 404: Not Found)

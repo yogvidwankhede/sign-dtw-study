@@ -102,3 +102,5 @@ W0000 00:00:1790812676.966924 2202105 inference_feedback_manager.cc:114] Feedbac
   warnings.warn('SymbolDatabase.GetPrototype() is deprecated. Please '
 /Users/yogvid/sign-dtw-study/.venv/lib/python3.11/site-packages/google/protobuf/symbol_database.py:55: UserWarning: SymbolDatabase.GetPrototype() is deprecated. Please use message_factory.GetMessageClass() instead. SymbolDatabase.GetPrototype() will be removed soon.
   warnings.warn('SymbolDatabase.GetPrototype() is deprecated. Please '
+kiss val 81 videos 89.0 s
+kiss test 130 videos 92.2 s

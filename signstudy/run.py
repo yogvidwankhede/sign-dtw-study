@@ -123,7 +123,7 @@ def eval_prototypes(cond, split_name, vocabs, ks, seeds, radius=-1, max_iter=30)
     return pd.concat(out, ignore_index=True)
 
 
-def eval_learned(cond, split_name, model, vocabs, ks, seeds, lr=1e-3, aug=False, steps=None, tag=None):
+def eval_learned(cond, split_name, model, vocabs, ks, seeds, lr=1e-3, aug=False, epochs=30, tag=None):
     split = getattr(cond, split_name)
     qx = np.stack([F.resample(x) for x in split.seqs])
     trx = np.stack([F.resample(x) for x in cond.train.seqs])
@@ -133,7 +133,7 @@ def eval_learned(cond, split_name, model, vocabs, ks, seeds, lr=1e-3, aug=False,
         for k in ks:
             for seed in (seeds if k != "full" else seeds[:1]):
                 cols = _ref_cols(cond, n, k, seed)
-                st = steps or T.steps_for(len(cols))
+                st = T.steps_for(len(cols), epochs=epochs)
                 (logits,), secs, _ = T.fit_predict(model, trx[cols], cond.train.y[cols], [qx[qmask]], n, seed, st,
                                                    lr=lr, aug=aug)
                 meta = dict(method=(tag or model), split=split_name, vocab=n, k=k, seed=seed if k != "full" else -1,
