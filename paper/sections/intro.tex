@@ -1,0 +1,30 @@
+\section{Introduction}
+Isolated sign recognition assigns a label from a fixed vocabulary to a short video of one sign. It is a small part of sign
+language processing and is not translation: it ignores grammar, context and most non-manual signals. We study it because
+it is a clean setting in which to ask a practical methods question. When there are only a few labelled examples per sign,
+does matching a new video against stored examples with dynamic time warping (DTW) work as well as a trained neural
+network, and at what point does the network pull ahead?
+
+A common recipe extracts hand and body landmarks with MediaPipe \citep{lugaresi2019mediapipe,zhang2020mphands}, turns them
+into per-frame features, and either trains a sequence model or compares sequences directly. Nearest-neighbour DTW needs no
+training and can be updated by adding examples, which is attractive for small, changing vocabularies. In general time-series
+classification, nearest-neighbour DTW with a tuned warping window is a strong baseline \citep{bagnall2014nn}, and deep
+networks are competitive on large benchmarks \citep{fawaz2019dl}. We have not found a controlled comparison of the two on
+signer-independent sign data that varies both the number of examples per sign and the vocabulary size, so we ran one.
+
+\paragraph{What this paper does.} On PopSign ASL v1.0 \citep{starner2023popsign}, with the dataset's signer-disjoint
+split, we compare DTW nearest-neighbour matching, DTW prototypes, Euclidean nearest neighbour, a 1D-CNN, a BiGRU and a small
+Transformer, all on the same MediaPipe features and the same queries. We vary the references per sign from 1 to all, the
+vocabulary from 10 to \nVocabMax{} signs, the feature set, the handling of missing hands and the DTW variant. The analysis was
+written down before the test data were scored (\texttt{PREREG.md}), and uncertainty is estimated by resampling signers.
+
+\paragraph{What it does not do.} It does not propose a new method, claim state-of-the-art accuracy, or show that the
+systems help Deaf people. It covers one sign language (American Sign Language), one dataset, smartphone selfie video, and a
+mostly one-handed vocabulary. The work was done by hearing researchers without a Deaf co-author; Section~\ref{sec:ethics}
+discusses what that limits.
+
+\paragraph{Relation to earlier work by the same author.}
+An earlier conference paper \citep{mankar2024} described a MediaPipe and DTW sign recogniser built on an open-source
+implementation \citep{guerin2022signdtw}. That paper compared DTW with an LSTM on a small custom dataset without
+signer-independent evaluation. The present study keeps that pipeline's feature idea as one baseline and replaces its
+evaluation.

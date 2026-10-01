@@ -1,0 +1,44 @@
+\documentclass[11pt]{article}
+\usepackage{acl}            % use [review] for anonymous submission
+\usepackage{times}
+\usepackage{latexsym}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{inconsolata}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+
+% Numbers are generated from results/ by `python -m signstudy.report` (see CLAIMS.md). Undefined ones render as ??.
+\IfFileExists{numbers.tex}{\input{numbers.tex}}{}
+\makeatletter
+\newcommand{\num}[1]{\@ifundefined{#1}{\textbf{??}}{\csname #1\endcsname}}
+\makeatother
+\providecommand{\nVocabMax}{??}
+
+\title{When Does Training-Free DTW Match Learned Models on Hand Landmarks?\\
+A Data-Efficiency and Signer-Independence Study of Isolated Sign Recognition}
+
+\author{Yogvid Wankhede \\
+  [Affiliation and contact: to be completed by the author] \\
+  ORCID: [to be completed]}
+
+\begin{document}
+\maketitle
+\input{sections/abstract}
+\input{sections/intro}
+\input{sections/related}
+\input{sections/methods}
+\input{sections/results}
+\input{sections/discussion}
+\input{sections/limits}
+\input{sections/ethics}
+\input{sections/repro}
+
+\section*{Acknowledgements}
+[Funding and acknowledgements to be completed by the author. Thanks to Georgia Tech and the Deaf Professional Arts Network for the PopSign dataset.]
+
+\bibliography{references}
+\bibliographystyle{acl_natbib}
+\end{document}

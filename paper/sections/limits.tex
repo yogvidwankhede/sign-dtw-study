@@ -1,0 +1,21 @@
+\section{Limitations}
+\label{sec:limits}
+\begin{itemize}
+\item \textbf{One dataset, one language.} All results are for ASL on PopSign (47 signers, selfie phone video, mostly one-handed
+signs). We do not test other datasets, languages, cameras or continuous signing.
+\item \textbf{Few signers.} The test split has 8 signers, so signer-clustered intervals are wide and small differences are not
+resolvable. Training noise (3 seeds) is smaller than signer variation.
+\item \textbf{Small models, limited tuning.} The learned models are small and tuned on a four-point grid at one condition
+(vocabulary 50, 10 examples per sign). Larger models, pre-training or augmentation may change where learned models overtake
+DTW. We include one augmentation arm to test this at one setting only.
+\item \textbf{Landmark quality.} Results depend on MediaPipe 0.10.14 and on the resize used; the fraction of videos or frames
+without detected hands is reported in the tables. Face and other non-manual signals are mostly not modelled.
+\item \textbf{Not translation, not an application.} Top-1 accuracy on isolated signs is not communication access. We did not
+evaluate any system with Deaf users.
+\item \textbf{No phonological analysis.} PopSign has no phonological annotation; we report data-driven confusions and make no
+claim about phonological similarity.
+\item \textbf{Timing.} Latency was measured on one Apple M4 Max laptop with other processes running; no low-power device was
+available, so embedded performance is not measured.
+\item \textbf{Pre-registration scope.} The plan was written by the author before test scoring, but is not a registered report
+and was not independently time-stamped; the git history is the record.
+\end{itemize}

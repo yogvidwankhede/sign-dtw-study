@@ -1,0 +1,25 @@
+\section{Related work}
+\paragraph{Datasets.} Isolated-sign datasets include WLASL \citep{li2020wlasl} (over 2000 words, over 100 signers) and MS-ASL
+\citep{vaezi2019msasl} (1000 signs, over 200 signers); ASL Citizen \citep{desai2023aslcitizen} (2731 signs, 52 signers),
+collected from consenting contributors; PopSign \citep{starner2023popsign}, recorded on smartphones; LSA64 \citep{ronchetti2023lsa64} for Argentinian Sign Language; and LSFB-ISOL \citep{fink2021lsfb}
+for Belgian French Sign Language. We use PopSign because its licence permits derived data, its signers consented to a
+public database, and it ships a signer-disjoint split.
+
+\paragraph{Landmark-based recognition.} Skeleton and pose-based models include graph convolutional networks
+\citep{jiang2021slgcn} and a pose-based Transformer \citep{bohacek2022spoter}. These are trained models evaluated on
+their own benchmarks; our smaller models are not meant to reproduce them, only to represent the learned side of a
+data-efficiency comparison.
+
+\paragraph{DTW and template matching for signs.} DTW \citep{sakoe1978} has several variants: banded and approximate forms
+\citep{salvador2007fastdtw}, averaged prototypes (DBA, \citealp{petitjean2011dba}) and the differentiable soft-DTW
+\citep{cuturi2017softdtw}. For signs, \citet{arcanjo2024} apply FastDTW to angular features computed from MediaPipe
+landmarks, and \citet{saggio2020} compare k-NN with DTW against a CNN on sensor-glove data. \citet{vandendriessche2025onesh}
+study one-shot recognition against a sign dictionary with learned embeddings. We did not find prior work that varies references per sign and
+vocabulary size together on signer-independent video data; our search was not exhaustive. The features we call F1 follow
+the hand-angle vectors of the open-source implementation \citep{guerin2022signdtw} used in our earlier work
+\citep{mankar2024}.
+
+\paragraph{Ethics of sign language technology.} Interdisciplinary and Deaf-led work argues that sign language AI has often
+been shaped by hearing researchers' priorities, rests on unrepresentative datasets and overstates communication benefits
+\citep{bragg2019assets,bragg2021fate,desai2024biases}. A survey of Deaf community members reports their views on automatic
+translation \citep{tran2023assets}. We take these as constraints on how we scope and word this paper.
