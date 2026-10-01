@@ -30,7 +30,7 @@ K_ORDER = [1, 2, 5, 10, 20, "full"]
 NUMW = {4: "Four", 10: "Ten", 50: "Fifty", 100: "Hundred", 250: "TwoFifty"}
 KW = {"1": "One", "2": "Two", "5": "Five", "10": "Ten", "20": "Twenty", "full": "All"}
 MW = {"dtw1nn": "Dtw", "euclid1nn": "Euclid", "dba_proto": "Dba", "cnn1d": "Cnn", "bigru": "Gru", "transformer": "Trans",
-      "bigru_aug": "GruAug", "cnn1d_aug": "CnnAug", "transformer_aug": "TransAug", "fastdtw_r1": "FastDtw"}
+      "bigru_aug": "GruAug", "cnn1d_aug": "CnnAug", "transformer_aug": "TransAug", "fastdtw_r1": "FastDtw", "legacy_fastdtw": "Legacy"}
 
 
 def nm(prefix, method, v, k):
@@ -215,6 +215,56 @@ def latex_tables(d):
         (TABLES / f"main_v{v}.tex").write_text("\n".join(lines) + "\n")
 
 
+def tuning_table(led):
+    """Validation grid behind the per-family choices (documents how much preprocessing matters)."""
+    f = C.RESULTS / "tuned.json"
+    if not f.exists():
+        return None
+    t = json.loads(f.read_text())
+    rows = []
+    for fam, grid in t["grids"].items():
+        for cfg, acc in grid:
+            rows.append(dict(family=fam, **cfg, val_top1=acc))
+    df = pd.DataFrame(rows)
+    df.to_csv(TABLES / "tuning_validation.csv", index=False)
+    name = {"dtw": "Dtw", "euclid": "Euclid", "cnn1d": "Cnn", "bigru": "Gru", "transformer": "Trans"}
+    for fam, g in df.groupby("family"):
+        led.add(f"tuneBest{name[fam]}", pct(g.val_top1.max()), f"validation top-1 of the chosen {fam} configuration (vocabulary {t['n_tune']}, k=10)", "results/tuned.json")
+        led.add(f"tuneZero{name[fam]}", pct(g[g.missing == "zero"].val_top1.max()), f"best validation top-1 of {fam} with zero-filled missing hands", "results/tuned.json")
+        led.add(f"tuneWorst{name[fam]}", pct(g.val_top1.min()), f"worst validation top-1 in the {fam} grid", "results/tuned.json")
+    naive = df[(df.family == "dtw") & (df.missing == "zero") & (df.scale == "raw") & (df.radius == -1)].val_top1
+    if len(naive):
+        led.add("tuneNaiveDtw", pct(naive.iloc[0]), "validation top-1 of DTW with zero-fill, raw scale, unconstrained", "results/tuned.json")
+    return df
+
+
+def legacy_macros(ci, led):
+    for m in ("fastdtw_r1", "legacy_fastdtw"):
+        g = ci[(ci.method == m) & (ci.vocab == 50) & (ci.k == "10")]
+        if g.empty:
+            continue
+        r = g.iloc[0]
+        led.add(nm("acc", m, 50, 10), pct(r.acc), f"top-1 %, {m}, vocabulary 50, k=10, one draw (seed 0)", "results/raw/test/fastdtw_legacy.csv.gz")
+        led.add(nm("accLo", m, 50, 10), pct(r.lo), "95% CI lower", "results/raw/test/fastdtw_legacy.csv.gz")
+        led.add(nm("accHi", m, 50, 10), pct(r.hi), "95% CI upper", "results/raw/test/fastdtw_legacy.csv.gz")
+
+
+def group_accuracy(df, led, vocab=50):
+    f = C.RESULTS / "sign_groups.csv"
+    if not f.exists():
+        return None
+    groups = pd.read_csv(f).set_index("sign")["group"]
+    signs = C.sign_list()
+    d = df[(df.vocab == vocab) & (df.k == "full") & (df.fset == "F1")].copy()
+    d["group"] = [groups.get(signs[i], "?") for i in d["sign"]]
+    out = d.groupby(["method", "group"]).agg(top1=("rank", lambda r: (r <= 1).mean()), n=("rank", "size")).reset_index()
+    out.to_csv(TABLES / "by_hand_group.csv", index=False)
+    cnt = groups.value_counts()
+    led.add("nTwoHandedSigns", int(cnt.get("two-handed", 0)), "signs among those used with both hands detected in >=50% of hand-present training frames", "results/sign_groups.csv", fmt="{:d}")
+    led.add("nOneHandedSigns", int(cnt.get("one-handed", 0)), "signs classified one-handed by the same rule", "results/sign_groups.csv", fmt="{:d}")
+    return out
+
+
 def ablation_table(led):
     f = RAW / "ablation.csv.gz"
     if not f.exists():
@@ -272,6 +322,9 @@ def main():
     hypotheses(tab, led, v50)
     crossover(ci, led)
     paired_table(tab, led, vocabs)
+    tuning_table(led)
+    legacy_macros(ci, led)
+    group_accuracy(df, led)
     latex_tables(d)
     ablation_table(led)
     per_sign(df, max(vocabs), signs)
