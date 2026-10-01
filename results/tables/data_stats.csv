@@ -1,4 +1,4 @@
-split,videos_used,no_hand_detected,signers,vocabulary
-train,21876,17,31,50
-val,1007,3,8,50
-test,1037,1,8,50
+split,videos,no_hand_detected,signers,vocabulary
+test,1038,1,8,50
+train,21893,17,31,50
+val,1010,3,8,50

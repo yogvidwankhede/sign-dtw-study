@@ -1,0 +1,23 @@
+{
+ "d_in": 420,
+ "extract_hours": 8.843138888888895,
+ "splits": {
+  "test": {
+   "no_hand": 1,
+   "signers": 8,
+   "videos": 1038
+  },
+  "train": {
+   "no_hand": 17,
+   "signers": 31,
+   "videos": 21893
+  },
+  "val": {
+   "no_hand": 3,
+   "signers": 8,
+   "videos": 1010
+  }
+ },
+ "videos_extracted": 34335,
+ "vocab": 50
+}

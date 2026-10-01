@@ -284,29 +284,43 @@ def group_accuracy(df, led, vocab=50):
 
 
 def data_and_compute_stats(led, vocab=50):
-    """Split sizes, failed-detection counts, parameter counts and compute spent (Responsible NLP checklist B6, C1)."""
+    """Split sizes, failed-detection counts, parameter counts and compute spent (Responsible NLP checklist B6, C1).
+    Computed from the landmark cache when it is present and stored in results/data_stats.json, which is committed so
+    that the report regenerates from a clean clone without the multi-GB cache."""
     import json as _json
-    from . import experiment as X
     from . import models as M
-    cond = X.build_condition(C.vocab(vocab), "F1", "zero")
+    store = C.RESULTS / "data_stats.json"
+    if (C.LANDMARKS / C.vocab(vocab)[-1] / "test.npz").exists():
+        from . import experiment as X
+        cond = X.build_condition(C.vocab(vocab), "F1", "zero")
+        st = {"vocab": vocab, "d_in": int(cond.train.seqs[0].shape[1]), "splits": {}}
+        for name in ("train", "val", "test"):
+            sp = getattr(cond, name)
+            st["splits"][name] = dict(videos=len(sp.seqs) + sp.failed, no_hand=sp.failed,
+                                      signers=len(set(sp.signer) | set(sp.failed_signer)))
+        log = C.LANDMARKS / "EXTRACTION_LOG.jsonl"
+        if log.exists():
+            rec = [_json.loads(l) for l in log.read_text().splitlines()]
+            keep = [r for r in rec if r["sign"] in set(C.vocab(vocab))]
+            st["extract_hours"] = sum(r["extract_s"] for r in keep) / 3600
+            st["videos_extracted"] = sum(r["kept"] for r in keep)
+        store.write_text(_json.dumps(st, indent=1, sort_keys=True))
+    elif not store.exists():
+        return None
+    st = _json.loads(store.read_text())
     rows = []
-    for name in ("train", "val", "test"):
-        sp = getattr(cond, name)
-        rows.append(dict(split=name, videos_used=len(sp.seqs), no_hand_detected=sp.failed,
-                         signers=len(set(sp.signer) | set(sp.failed_signer)), vocabulary=vocab))
-        led.add(f"nVideos{name.capitalize()}", len(sp.seqs) + sp.failed, f"{name} videos (queries for val/test) at vocabulary {vocab}", "data/landmarks (cached features)", fmt="{:d}")
-        led.add(f"nNoHand{name.capitalize()}", sp.failed, f"{name} videos with no hand detected in any frame (counted as errors)", "data/landmarks (cached features)", fmt="{:d}")
-        led.add(f"nSigners{name.capitalize()}", len(set(sp.signer) | set(sp.failed_signer)), f"signers in the {name} split", "data/landmarks (cached features)", fmt="{:d}")
+    for name, v in st["splits"].items():
+        rows.append(dict(split=name, videos=v["videos"], no_hand_detected=v["no_hand"], signers=v["signers"], vocabulary=st["vocab"]))
+        cap = name.capitalize()
+        led.add(f"nVideos{cap}", v["videos"], f"{name} videos (queries for val/test) at vocabulary {st['vocab']}", "results/data_stats.json", fmt="{:d}")
+        led.add(f"nNoHand{cap}", v["no_hand"], f"{name} videos with no hand detected in any frame (counted as errors)", "results/data_stats.json", fmt="{:d}")
+        led.add(f"nSigners{cap}", v["signers"], f"signers in the {name} split", "results/data_stats.json", fmt="{:d}")
     pd.DataFrame(rows).to_csv(TABLES / "data_stats.csv", index=False)
-    d_in = cond.train.seqs[0].shape[1]
     for key, name in (("cnn1d", "Cnn"), ("bigru", "Gru"), ("transformer", "Trans")):
-        led.add(f"nParams{name}", M.n_params(M.build(key, d_in, vocab)), f"parameters of the {key} model for {d_in}-dim input and {vocab} classes", "signstudy/models.py", fmt="{:,d}".replace(",", ""))
-    log = C.LANDMARKS / "EXTRACTION_LOG.jsonl"
-    if log.exists():
-        rec = [_json.loads(l) for l in log.read_text().splitlines()]
-        keep = [r for r in rec if r["sign"] in set(C.vocab(vocab))]
-        led.add("extractHours", sum(r["extract_s"] for r in keep) / 3600, f"MediaPipe extraction wall-clock hours for the {vocab} signs (8 workers, machine shared with other jobs)", "data/landmarks/EXTRACTION_LOG.jsonl")
-        led.add("nVideosExtracted", sum(r["kept"] for r in keep), f"videos converted to landmarks for the {vocab} signs", "data/landmarks/EXTRACTION_LOG.jsonl", fmt="{:d}")
+        led.add(f"nParams{name}", M.n_params(M.build(key, st["d_in"], st["vocab"])), f"parameters of the {key} model for {st['d_in']}-dim input and {st['vocab']} classes", "signstudy/models.py", fmt="{:d}")
+    if "extract_hours" in st:
+        led.add("extractHours", st["extract_hours"], f"MediaPipe extraction wall-clock hours for the {st['vocab']} signs (8 workers, machine shared with other jobs)", "results/data_stats.json")
+        led.add("nVideosExtracted", st["videos_extracted"], f"videos converted to landmarks for the {st['vocab']} signs", "results/data_stats.json", fmt="{:d}")
     tt = [pd.read_csv(f) for f in RAW.glob("*_training_time.csv.gz")]
     if tt:
         allt = pd.concat(tt)
@@ -316,7 +330,7 @@ def data_and_compute_stats(led, vocab=50):
                 g = allt[(allt.method == key) & (allt.vocab == 50) & (allt.k == k)]
                 if len(g):
                     led.add(f"trainSec{name}{kw}", g.train_s.mean(), f"mean training wall-clock seconds, {key}, vocabulary 50, k={k} (Apple GPU via MPS, machine shared)", "results/raw/test/*_training_time.csv.gz", fmt="{:.0f}")
-        led.add("trainHours", pd.concat(tt).train_s.sum() / 3600, "total wall-clock hours spent training the main-grid learned models (excludes tuning, ablations, augmentation)", "results/raw/test/*_training_time.csv.gz")
+        led.add("trainHours", allt.train_s.sum() / 3600, "total wall-clock hours spent training the main-grid learned models (excludes tuning, ablations, augmentation)", "results/raw/test/*_training_time.csv.gz")
 
 
 def ablation_table(led):
