@@ -167,6 +167,43 @@ def crossover(ci, led):
     return df
 
 
+def paired_table(tab, led, vocabs):
+    """Exploratory paired differences against DTW 1-NN at every vocabulary and k (95% intervals)."""
+    rows = []
+    for v in vocabs:
+        for k in map(str, K_ORDER):
+            where = dict(vocab=v, k=k, fset="F1", dominant=False)
+            for m in ("euclid1nn", "cnn1d", "bigru", "transformer"):
+                r = S.paired_difference(tab, m, "dtw1nn", where, conf=0.95)
+                if r:
+                    rows.append(r)
+    df = pd.DataFrame(rows)
+    if df.empty:
+        return df
+    df.to_csv(TABLES / "paired_vs_dtw.csv", index=False)
+    for r in df.itertuples():
+        key = f"{r.a}V{r.vocab}K{r.k}".replace("_", "")
+        led.add(f"d{key}", pct(r.diff), f"{r.a} minus dtw1nn, top-1 percentage points, vocabulary {r.vocab}, k={r.k} (exploratory)", "results/tables/paired_vs_dtw.csv")
+        led.add(f"dlo{key}", pct(r.lo), f"lower 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
+        led.add(f"dhi{key}", pct(r.hi), f"upper 95% bound of the same difference", "results/tables/paired_vs_dtw.csv")
+    return df
+
+
+def latex_tables(d):
+    """Compact LaTeX tables (accuracy only; intervals are in the CSV and the paired-difference table)."""
+    order = [m for m in LABEL if m in set(d.method)]
+    for v in sorted(d.vocab.unique()):
+        p = d[(d.vocab == v) & d.method.isin(order)].pivot(index="method", columns="k", values="acc")
+        p = p.reindex(order)
+        cols = [str(k) for k in K_ORDER if str(k) in p.columns]
+        lines = ["\\begin{tabular}{l" + "r" * len(cols) + "}", "\\toprule",
+                 "Method & " + " & ".join("all" if c == "full" else c for c in cols) + " \\\\", "\\midrule"]
+        for m in order:
+            lines.append(LABEL[m] + " & " + " & ".join("--" if pd.isna(p.loc[m, c]) else f"{pct(p.loc[m, c]):.1f}" for c in cols) + " \\\\")
+        lines += ["\\bottomrule", "\\end{tabular}"]
+        (TABLES / f"main_v{v}.tex").write_text("\n".join(lines) + "\n")
+
+
 def ablation_table(led):
     f = RAW / "ablation.csv.gz"
     if not f.exists():
@@ -223,6 +260,8 @@ def main():
     v50 = 50 if 50 in vocabs else max(vocabs)
     hypotheses(tab, led, v50)
     crossover(ci, led)
+    paired_table(tab, led, vocabs)
+    latex_tables(d)
     ablation_table(led)
     per_sign(df, max(vocabs), signs)
     timing_table()
