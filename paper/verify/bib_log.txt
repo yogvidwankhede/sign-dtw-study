@@ -1,0 +1,26 @@
+OK   mankar2024 10.1007/978-981-97-1488-9_7 | ?
+OK   starner2023popsign 10.52202/075280-0011 | ?
+OK   fink2021lsfb 10.1109/IJCNN52387.2021.9534336 | ?
+OK   bohacek2022spoter 10.1109/wacvw54805.2022.00024 | ?
+OK   arcanjo2024 10.5753/webmedia.2024.243245 | ?
+OK   saggio2020 10.3390/s20143879 | ?
+OK   fawaz2019dl 10.1007/s10618-019-00619-1 | ?
+OK   petitjean2011dba 10.1016/j.patcog.2010.09.013 | ?
+OK   sakoe1978 10.1109/TASSP.1978.1163055 | ?
+OK   salvador2007fastdtw 10.3233/IDA-2007-11508 | ?
+OK   field2007cluster 10.1111/j.1467-9868.2007.00593.x | ?
+OK   bragg2021fate 10.1145/3436996 | ?
+OK   bragg2019assets 10.1145/3308561.3353774 | ?
+OK   tran2023assets 10.1145/3597638.3614507 | ?
+OK   li2020wlasl 10.1109/WACV45572.2020.9093512 | ?
+OK   desai2023aslcitizen 2304.05934 | ASL Citizen: A Community-Sourced Dataset for Advancing Isolated Sign Language Recognition
+OK   vaezi2019msasl 1812.01053 | MS-ASL: A Large-Scale Data Set and Benchmark for Understanding American Sign Language
+OK   ronchetti2023lsa64 2310.17429 | LSA64: An Argentinian Sign Language Dataset
+OK   jiang2021slgcn 2103.08833 | Skeleton Aware Multi-modal Sign Language Recognition
+OK   vandendriessche2025onesh 2502.20171 | Representing Signs as Signs: One-Shot ISLR to Facilitate Functional Sign Language Technolo
+OK   bagnall2014nn 1406.4757 | An Experimental Evaluation of Nearest Neighbour Time Series Classification
+OK   cuturi2017softdtw 1703.01541 | Soft-DTW: a Differentiable Loss Function for Time-Series
+OK   desai2024biases 2403.02563 | Systemic Biases in Sign Language AI Research: A Deaf-Led Call to Reevaluate Research Agend
+OK   lugaresi2019mediapipe 1906.08172 | MediaPipe: A Framework for Building Perception Pipelines
+OK   zhang2020mphands 2006.10214 | MediaPipe Hands: On-device Real-time Hand Tracking
+failed: []
