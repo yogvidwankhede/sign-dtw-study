@@ -13,3 +13,4 @@ matplotlib
 pytest
 tabulate==0.10.0
 tqdm
+joblib==1.6.0

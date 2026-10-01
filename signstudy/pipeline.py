@@ -147,6 +147,39 @@ def stage_main(split, n_max, which):
     return outs
 
 
+def stage_aug(split, n_aug):
+    """Learned models with light augmentation (time stretch, noise, scale) at one vocabulary, same tuned settings."""
+    if split == "test":
+        R.guard_test_split()
+    t = _tuned()["families"]
+    rows = []
+    for m in MODELS:
+        hp = t[m]
+        cond = X.build_condition(C.vocab(n_aug), "F1", hp["missing"])
+        df, _ = R.eval_learned(cond, split, m, [n_aug], KS, SEEDS, lr=hp["lr"], epochs=hp["epochs"], aug=True,
+                               tag=m + "_aug")
+        rows.append(df)
+        R.save(pd.concat(rows, ignore_index=True), "augmentation", split)
+    return pd.concat(rows, ignore_index=True)
+
+
+def stage_groups(n):
+    """One- vs two-handed sign groups from TRAIN videos only (PREREG.md section 3): a sign is two-handed if both hands
+    are detected in at least 50% of its hand-present frames."""
+    from . import dataset as D
+    rows = []
+    for s in C.vocab(n):
+        both = any_ = 0
+        for v in D.load_sign(s, "train"):
+            l, r = ~np.isnan(v.left[:, 0, 0]), ~np.isnan(v.right[:, 0, 0])
+            both += int((l & r).sum())
+            any_ += int((l | r).sum())
+        rows.append(dict(sign=s, both_fraction=both / max(any_, 1), group="two-handed" if both / max(any_, 1) >= 0.5 else "one-handed"))
+    out = C.RESULTS / "sign_groups.csv"
+    pd.DataFrame(rows).to_csv(out, index=False)
+    return out
+
+
 def stage_ablate(split, n_abl):
     """Feature sets, missing-hand handling and handedness at vocabulary n_abl, k in {5, full}; each family keeps its
     tuned scaling / band / learning rate, only the factor under study changes."""
@@ -177,7 +210,7 @@ def stage_ablate(split, n_abl):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("stage", choices=["tune", "main", "ablate"])
+    ap.add_argument("stage", choices=["tune", "main", "ablate", "aug", "groups"])
     ap.add_argument("--split", default="val", choices=["val", "test"])
     ap.add_argument("--vocab", type=int, default=10, help="number of signs to use (must be extracted)")
     ap.add_argument("--methods", nargs="*", default=["dtw", "euclid", "dba", *MODELS])
@@ -189,6 +222,10 @@ def main():
         stage_tune(a.vocab)
     elif a.stage == "main":
         stage_main(a.split, a.vocab, a.methods)
+    elif a.stage == "aug":
+        stage_aug(a.split, a.vocab)
+    elif a.stage == "groups":
+        stage_groups(a.vocab)
     else:
         stage_ablate(a.split, a.vocab)
     print("done in", round(time.time() - t0), "s")
