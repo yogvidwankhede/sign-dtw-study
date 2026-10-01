@@ -21,6 +21,12 @@ make paper                 # compile paper/paper.tex (tectonic)
 landmarks and deleted. The landmark cache lives in `data/landmarks/` and reruns skip finished signs. Test-split commands refuse
 to run unless the git tag `prereg-v1` exists, is an ancestor of HEAD, and the code is committed.
 
+Reproducibility checks: `python -m signstudy.report` from a clean clone regenerates every table, figure, number and the
+claims ledger byte-identically from the committed `results/` (this is what CI checks); `python scripts/check_rerun.py` recomputes
+test rows from the landmark cache and compares them with the stored ones (DTW, Euclidean and one CNN run matched exactly on
+the machine that produced them; other hardware may differ for the learned models). Test queries are drawn once for the largest
+vocabulary and restricted to smaller ones, so a smaller vocabulary run on its own would draw different queries.
+
 ## Layout
 
 - `signstudy/` code: `extract.py` (download + MediaPipe), `features.py`, `dtwlib.py` (numba DTW checked against tslearn),

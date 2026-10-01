@@ -25,7 +25,7 @@ Every method family chooses its own preprocessing on validation signers only (50
 
 \paragraph{Protocol.} References (or training examples) per sign $k\in\{1,2,5,10,20,\text{all}\}$ are drawn at random from the
 training split, nested across $k$, with three draw seeds (which also seed network initialisation). Test queries are up to
-three videos per test signer and sign, drawn once and shared by all methods. A query on which no hand is ever detected is
+three videos per test signer and sign, drawn once for the largest vocabulary and restricted to the signs of each smaller one, so all methods and vocabularies share them. A query on which no hand is ever detected is
 counted as an error. We report top-1 accuracy with 95\% intervals from resampling the 8 test signers (10{,}000 resamples,
 percentile intervals; cf. \citealp{field2007cluster}), and paired differences use the same resamples. With only 8 clusters
 the intervals are wide and we do not report p-values. Two hypotheses were fixed in advance and judged at 97.5\%

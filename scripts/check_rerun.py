@@ -20,7 +20,10 @@ def compare(new, name, **flt):
     for col, val in flt.items():
         old, new = old[old[col] == val], new[new[col] == val]
     key = ["vocab", "k", "seed", "signer", "sign"]
-    m = old.merge(new, on=key, suffixes=("_old", "_new")).sort_values(key)
+    # several queries share (signer, sign); rows are written in query order, so the position within the group identifies them
+    old = old.assign(qid=old.groupby(key).cumcount())
+    new = new.assign(qid=new.groupby(key).cumcount())
+    m = old.merge(new, on=key + ["qid"], suffixes=("_old", "_new"), validate="one_to_one")
     same_rank = (m["rank_old"] == m["rank_new"]).mean()
     same_pred = (m["pred_old"] == m["pred_new"]).mean()
     print(f"{name} {flt}: {len(m)} matched rows | identical ranks {same_rank:.4f} | identical predictions {same_pred:.4f}")
@@ -30,7 +33,8 @@ def compare(new, name, **flt):
 def main():
     R.guard_test_split()
     t = P._tuned()["families"]
-    signs = C.vocab(10)
+    # Queries are drawn once for the largest vocabulary (50) and restricted for smaller ones, exactly as in pipeline.stage_main.
+    signs = C.vocab(50)
     cond = X.build_condition(signs, "F1", t["dtw"]["missing"])
     compare(P._dtw_family(cond, "test", t["dtw"], [10]), "dtw1nn", vocab=10)
     cond = X.build_condition(signs, "F1", t["euclid"]["missing"])
