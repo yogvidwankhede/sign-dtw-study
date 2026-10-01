@@ -5,9 +5,14 @@
 signs). We do not test other datasets, languages, cameras or continuous signing.
 \item \textbf{Few signers.} The test split has 8 signers, so signer-clustered intervals are wide and small differences are not
 resolvable. Training noise (3 seeds) is smaller than signer variation.
-\item \textbf{Small models, limited tuning.} The learned models are small and tuned on a four-point grid at one condition
-(vocabulary 50, 10 examples per sign). Larger models, pre-training or augmentation may change where learned models overtake
-DTW. We include one augmentation arm to test this at one setting only.
+\item \textbf{Small models, limited tuning.} The learned models are small and tuned on a small grid at one condition
+(vocabulary 50, 10 examples per sign). All three chose the longest epoch budget in the grid, so longer training might help
+them further, and the step cap of 4000 gives the largest conditions only a few epochs. Larger models or pre-training may change
+the picture. We include one augmentation arm to test sensitivity at one vocabulary only.
+\item \textbf{Only F1 in the main grid, and a handicap risk for DTW.} The main comparison uses the hand-angle features of the
+earlier implementation, which carry no hand location or orientation. DTW and Euclidean matching were given every preprocessing
+option we could think of on validation signers, but other features, local costs or learned metrics might favour template
+matching more.
 \item \textbf{Landmark quality.} Results depend on MediaPipe 0.10.14 and on the resize used; the fraction of videos or frames
 without detected hands is reported in the tables. Face and other non-manual signals are mostly not modelled.
 \item \textbf{Not translation, not an application.} Top-1 accuracy on isolated signs is not communication access. We did not
