@@ -20,6 +20,7 @@ from . import config as C
 
 _HOLISTIC = None
 _FACE_IDX = None
+FACE_SIGNS = set(C.vocab(50)) if not C.ASLC else set()
 
 
 def face_indices():
@@ -140,6 +141,9 @@ def run(signs, workers=8, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
             t = time.time()
             results = pool.map(process_video, paths, chunksize=2)
             keep = [(p, r) for p, r in zip(paths, results) if r is not None]
+            if sign not in FACE_SIGNS:       # face landmarks are only used by the 50-sign ablation; do not store them otherwise
+                for _, r in keep:
+                    r["face"] = np.zeros((r["left"].shape[0], 0, 3), dtype=np.float32)
             pack([r for _, r in keep], [p.name for p, _ in keep], C.LANDMARKS / sign / f"{split}.npz")
             shutil.rmtree(vid_dir, ignore_errors=True)
             rec = dict(sign=sign, split=split, videos=len(paths), kept=len(keep), download_s=round(t_dl, 1),
