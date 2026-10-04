@@ -54,7 +54,10 @@ def eval_minirocket(cond, split_name, vocabs, ks, seeds, n_kernels=10000, label=
                 mr = MiniRocket(n_kernels=n_kernels, random_state=seed)
                 ftr = mr.fit_transform(xtr)
                 clf = RidgeClassifierCV(alphas=np.logspace(-3, 3, 10)).fit(ftr, cond.train.y[cols])
-                sc = -clf.decision_function(mr.transform(xq))
+                sc = clf.decision_function(mr.transform(xq))
+                if sc.ndim == 1:                      # two classes: sklearn returns one score per sample
+                    sc = np.stack([-sc, sc], axis=1)
+                sc = -sc
                 meta = dict(method=label, split=split_name, vocab=n, k=k, seed=seed if k != "full" else -1,
                             fset=cond.fset, missing=cond.missing, dominant=cond.dominant)
                 out.append(R._rows(split, sc.astype(np.float32), split.y[qmask], n, meta))
