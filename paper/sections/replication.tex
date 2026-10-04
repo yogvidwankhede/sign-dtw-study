@@ -46,3 +46,17 @@ example per sign and 300 signs no method exceeds \czaccTransVThreeHundredKOne\% 
 cells, with the 95\% interval above zero in \cznEuclidAheadExcl{} and below zero in \cznEuclidBehindExcl{} of them. On this dataset the
 extra flexibility of DTW's alignment did not help, as on PopSign (where Euclidean was above DTW in \nEuclidAhead{} of \nEuclidCells{} cells and
 clearly above in \nEuclidAheadExcl{}).
+
+\paragraph{The same extensions (exploratory).} The extra baselines of Section~\ref{sec:extension} give the same picture on ASL Citizen (50 signs; Table~\ref{tab:aslcext}).
+Neighbour voting again chose one neighbour. Fisher-weighted DTW is slightly better than plain DTW (\czaccWdtwVFiftyKAll\% against \czaccDtwVFiftyKAll\% with all examples) and still below Euclidean
+1-NN (\czaccEuclidVFiftyKAll\%). MiniRocket is below DTW with one example (\czaccRocketVFiftyKOne\% against \czaccDtwVFiftyKOne\%), level at two, and above it from five
+(\czaccRocketVFiftyKFive\% against \czaccDtwVFiftyKFive\%, a difference of \czdifRocketVFiftyKFive{} points, interval \czdifLoRocketVFiftyKFive{} to \czdifHiRocketVFiftyKFive{}) up to
+\czaccRocketVFiftyKAll\% with all examples, but stays below the neural models (\czaccTransVFiftyKAll\% for the Transformer). Selecting settings per $k$ moves cells by up to \czperkMaxChange{} points and
+training for 200 epochs by between \czlongMinGainCnn{} and \czlongMaxGainCnn{} points for the CNN (BiGRU \czlongMinGainGru{} to \czlongMaxGainGru{}, Transformer \czlongMinGainTrans{} to \czlongMaxGainTrans{}),
+neither closing the gap.
+\begin{table}[t]
+\centering\small
+\input{../results_aslc/tables/extension.tex}
+\caption{ASL Citizen, 50 signs: top-1 accuracy (\%) of additional methods and variants (exploratory) beside the main ones.}
+\label{tab:aslcext}
+\end{table}

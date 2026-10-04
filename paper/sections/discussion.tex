@@ -7,9 +7,9 @@ estimate is \accTransVFiftyKOne\%). Euclidean nearest neighbour was at least as 
 prototypes were poor. Preprocessing mattered a great deal for the template-matching baselines (\tuneGapDtw{} points on PopSign validation between the
 naive and the chosen setting) and little for the learned models, which is a reason to tune baselines before concluding anything about them.
 
-\paragraph{Other baselines.} A stronger time-series classifier (MiniRocket) is weaker than DTW with one or two examples, level at five to ten and better from twenty,
-but stays far below the neural models; Fisher-weighted DTW and neighbour voting did not help; training the neural models longer and tuning per $k$ changed
-little. These checks make it less likely that the result comes from an under-tuned neural model or an unlucky DTW configuration, although
+\paragraph{Other baselines.} A stronger time-series classifier (MiniRocket) is weaker than DTW with one or two examples on PopSign and with one on ASL Citizen, and better from about twenty examples on PopSign and
+from five on ASL Citizen, but stays far below the neural models; neighbour voting did not help and Fisher-weighted DTW helped only a little on ASL Citizen; training the neural models longer and tuning per $k$ changed
+little (a few points at most). These checks make it less likely that the result comes from an under-tuned neural model or an unlucky DTW configuration, although
 they cannot rule out better template-matching or metric-learning methods that we did not try.
 
 \paragraph{Why DTW trails is only partly examined.} The descriptive analyses did not point to a clear cause: signers differ in which hand they sign with (which matters

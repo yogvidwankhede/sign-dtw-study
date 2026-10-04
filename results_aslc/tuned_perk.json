@@ -1,0 +1,86 @@
+{
+ "1": {
+  "dtw": {
+   "scale": "std",
+   "radius": 5
+  },
+  "euclid": {
+   "scale": "std"
+  },
+  "cnn1d": {
+   "lr": 0.001,
+   "epochs": 20
+  },
+  "bigru": {
+   "lr": 0.001,
+   "epochs": 20
+  },
+  "transformer": {
+   "lr": 0.001,
+   "epochs": 20
+  }
+ },
+ "5": {
+  "dtw": {
+   "scale": "raw",
+   "radius": -1
+  },
+  "euclid": {
+   "scale": "std"
+  },
+  "cnn1d": {
+   "lr": 0.001,
+   "epochs": 80
+  },
+  "bigru": {
+   "lr": 0.001,
+   "epochs": 20
+  },
+  "transformer": {
+   "lr": 0.001,
+   "epochs": 20
+  }
+ },
+ "10": {
+  "dtw": {
+   "scale": "raw",
+   "radius": 3
+  },
+  "euclid": {
+   "scale": "std"
+  },
+  "cnn1d": {
+   "lr": 0.0003,
+   "epochs": 80
+  },
+  "bigru": {
+   "lr": 0.001,
+   "epochs": 80
+  },
+  "transformer": {
+   "lr": 0.001,
+   "epochs": 80
+  }
+ },
+ "full": {
+  "dtw": {
+   "scale": "std",
+   "radius": 5
+  },
+  "euclid": {
+   "scale": "std"
+  },
+  "cnn1d": {
+   "lr": 0.001,
+   "epochs": 80
+  },
+  "bigru": {
+   "lr": 0.001,
+   "epochs": 80
+  },
+  "transformer": {
+   "lr": 0.001,
+   "epochs": 20
+  }
+ }
+}
