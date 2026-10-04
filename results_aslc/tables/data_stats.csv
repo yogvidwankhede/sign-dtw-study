@@ -1,0 +1,4 @@
+split,videos,no_hand_detected,signers,vocabulary
+test,615,1,11,50
+train,733,0,30,50
+val,188,0,5,50
