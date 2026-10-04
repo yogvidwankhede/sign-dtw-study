@@ -9,6 +9,10 @@ application, and we make no claim that any result benefits Deaf people.
 and appearance-based uses as out of scope; we keep face landmarks local, release only hand and pose landmarks, and never
 attempt to identify signers. The dataset card also discourages continuous-signing and translation claims, which we avoid.
 
+\paragraph{ASL Citizen.} Its licence permits non-commercial research and forbids distributing the data or modifications, requires use consistent with participants' consent,
+and requires destroying personal data when the research ends. We fetched only the videos needed, deleted them after extracting hand and pose landmarks, extracted no face landmarks, release only aggregate results,
+and will delete the local landmarks when the work is complete. The dataset's recommended-use page discourages continuous-signing and interpreter-replacement uses and any attempt to identify participants; we do none of these.
+
 \paragraph{Risks.} A cheap recogniser could be presented as a substitute for interpreters or language access. High accuracy
 on 250 isolated signs does not support that, and we discourage it. Community perspectives on automatic sign language
 translation \citep{tran2023assets} and dataset governance \citep{bragg2021fate} should be consulted before any deployment.

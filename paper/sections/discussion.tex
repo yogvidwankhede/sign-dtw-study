@@ -1,28 +1,33 @@
 \section{Discussion}
-\paragraph{What the data say.} On PopSign with signer-independent splits and hand-angle features, small learned models beat
-nearest-neighbour DTW from one example per sign upward, at vocabularies of 10 and 50 signs, and the two pre-registered
-expectations came out as: H1 (DTW ahead with few examples) not supported, H2 (learned models ahead with all data) supported. With
-one example per sign and 50 signs every method is weak (the best point estimate is \accTransVFiftyKOne\%). Euclidean
-nearest neighbour was never worse than DTW at 50 signs, and DBA prototypes were poor. Preprocessing mattered a great deal for the
-template-matching baselines (\tuneGapDtw{} points on validation between the naive and the chosen setting) and little for the learned
-models, which is a reason to tune baselines before concluding anything about them.
+\paragraph{What the data say.} On both datasets, with signer-independent splits and hand-angle features, small learned models beat
+nearest-neighbour DTW from one example per sign upward. On PopSign the two pre-registered expectations came out as: H1 (DTW ahead with
+few examples) not supported, H2 (learned models ahead with all data) supported; the pre-registered replication on ASL Citizen supported
+both hypotheses at vocabularies up to 300 signs. With one example per sign and 50 signs every method is weak on PopSign (the best point
+estimate is \accTransVFiftyKOne\%). Euclidean nearest neighbour was at least as good as DTW in most cells on both datasets, and DBA
+prototypes were poor. Preprocessing mattered a great deal for the template-matching baselines (\tuneGapDtw{} points on PopSign validation between the
+naive and the chosen setting) and little for the learned models, which is a reason to tune baselines before concluding anything about them.
 
-\paragraph{Why DTW trails is untested.} Several explanations are plausible and we did not test them: the per-frame angle features are
-noisy, so extra alignment freedom may bring unrelated signs closer; the learned models can weight informative dimensions while DTW
-weights all dimensions equally; and signer variation, which a model trained on \nSignersTrain{} signers can absorb, is a direct cost for
-template matching. Adding hand location and the preprocessing choices narrowed the gap only partly. We therefore make no causal
-claim about the mechanism.
+\paragraph{Other baselines.} A stronger time-series classifier (MiniRocket) is weaker than DTW with one or two examples, level at five to ten and better from twenty,
+but stays far below the neural models; Fisher-weighted DTW and neighbour voting did not help; training the neural models longer and tuning per $k$ changed
+little. These checks make it less likely that the result comes from an under-tuned neural model or an unlucky DTW configuration, although
+they cannot rule out better template-matching or metric-learning methods that we did not try.
+
+\paragraph{Why DTW trails is only partly examined.} The descriptive analyses did not point to a clear cause: signers differ in which hand they sign with (which matters
+for the few-example regime, since the dominant-hand ablation lifts the neural models a lot), but swapping hand slots at test time costs little, and per-sign movement does not
+track the gap. Other plausible explanations remain untested: the per-frame angle features are noisy, so extra alignment freedom may bring unrelated signs closer; the learned
+models can weight informative dimensions while DTW weights all equally; and signer variation, which a model trained on \nSignersTrain{} signers can absorb, is a direct cost for
+template matching. We therefore make no causal claim about the mechanism.
 
 \paragraph{Relation to other results.} In general time-series classification, tuned nearest-neighbour DTW is a strong baseline
 \citep{bagnall2014nn}. Our result does not contradict that finding, because the setting differs: 420-dimensional noisy features
-from landmark detection, 50 classes, and test signers unseen in training; we did not investigate how far each of these differences
+from landmark detection, 50 to 300 classes, and test signers unseen in training; we did not investigate how far each of these differences
 matters. The earlier conference paper from the same author \citep{mankar2024} reported DTW ahead of an LSTM on a small custom
-dataset without a signer-independent split; we cannot re-run that experiment, and the present signer-independent results do not
-support carrying its conclusion over to this setting.
+dataset without a signer-independent split; we cannot re-run that experiment, and the present signer-independent results on two datasets do not
+support carrying its conclusion over to these settings.
 
-\paragraph{Practical reading, with limits.} For this dataset and these features, a small learned model is the better default once
-a few labelled examples per sign and seconds to a few minutes of training are available (Section~\ref{sec:results}), and it is also much cheaper at inference when many
-reference videos exist. Template matching keeps its practical advantages of requiring no training and of letting a new sign be added
-by storing one example, but in our experiments that convenience cost accuracy. This is a statement about one dataset, one language
-and our feature choices (Section~\ref{sec:limits}); it says nothing about whether any of these systems is useful to Deaf people,
+\paragraph{Practical reading, with limits.} For these datasets and features, a small learned model is the better default once
+a few labelled examples per sign and seconds to a few minutes of training are available (Section~\ref{sec:results}), and it
+is also much cheaper at inference when many reference videos exist. Template matching keeps its practical advantages of requiring no training
+and of letting a new sign be added by storing one example, but in our experiments that convenience cost accuracy. This is a statement about two datasets,
+one language and our feature choices (Section~\ref{sec:limits}); it says nothing about whether any of these systems is useful to Deaf people,
 and accuracy on isolated signs is not communication access (Section~\ref{sec:ethics}).

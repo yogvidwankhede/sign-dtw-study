@@ -108,8 +108,10 @@ seconds at 10 examples per sign and \trainSecCnnKAll{} and \trainSecTransKAll{} 
 processes running, and no low-power device was available. These costs exclude MediaPipe landmark extraction
 (\extractHours{} wall-clock hours for the 50 signs on this machine).
 
+\input{sections/extension}
+
 \subsection{Coverage}
-Vocabularies of 100 and 250 signs were not run: landmark extraction for 50 signs took \extractHours{} hours on this machine and
-the larger vocabularies would have taken several times longer. The ASL Citizen replication and soft-DTW prototypes in the
-pre-registration were not run. Of the \nVideosTest{} test queries at 50 signs, \nNoHandTest{} had no detected hand and is counted as
-an error; the training and validation splits have \nNoHandTrain{} and \nNoHandVal{} such videos.
+On PopSign, vocabularies of 100 and 250 signs were not run: landmark extraction for 50 signs took \extractHours{} hours on this machine and
+the larger vocabularies would have taken several times longer. The vocabulary sweep up to 300 signs is on ASL Citizen
+(Section~\ref{sec:replication}). Soft-DTW prototypes, planned in the pre-registration, were not run. Of the \nVideosTest{} test queries at 50 signs,
+\nNoHandTest{} had no detected hand and is counted as an error; the training and validation splits have \nNoHandTrain{} and \nNoHandVal{} such videos.

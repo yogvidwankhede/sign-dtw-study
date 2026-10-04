@@ -12,6 +12,7 @@
 
 % Numbers are generated from results/ by `python -m signstudy.report` (see CLAIMS.md). Undefined ones render as ??.
 \IfFileExists{numbers.tex}{\input{numbers.tex}}{}
+\IfFileExists{numbers_aslc.tex}{\input{numbers_aslc.tex}}{}
 \makeatletter
 \newcommand{\num}[1]{\@ifundefined{#1}{\textbf{??}}{\csname #1\endcsname}}
 \makeatother
@@ -31,6 +32,7 @@ A Data-Efficiency and Signer-Independence Study of Isolated Sign Recognition}
 \input{sections/related}
 \input{sections/methods}
 \input{sections/results}
+\input{sections/replication}
 \input{sections/discussion}
 \input{sections/limits}
 \input{sections/ethics}

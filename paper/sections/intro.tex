@@ -18,8 +18,12 @@ Transformer, all on the same MediaPipe features and the same queries. We vary th
 vocabulary from 10 to \nVocabMax{} signs, the feature set, the handling of missing hands and the DTW variant. The analysis was
 written down before the test data were scored (\texttt{PREREG.md}), and uncertainty is estimated by resampling signers.
 
+\paragraph{Replication and extensions.} Because the first result went against our expectation, we then ran a pre-registered replication on a second
+dataset, ASL Citizen \citep{desai2023aslcitizen}, with vocabularies up to 300 signs, and exploratory extensions with additional baselines,
+longer training, per-$k$ tuning and descriptive analyses of possible explanations.
+
 \paragraph{What it does not do.} It does not propose a new method, claim state-of-the-art accuracy, or show that the
-systems help Deaf people. It covers one sign language (American Sign Language), one dataset, smartphone selfie video, and a
+systems help Deaf people. It covers one sign language (American Sign Language) and two datasets; the main one is smartphone selfie video with a
 mostly one-handed vocabulary. The work was done by hearing researchers without a Deaf co-author; Section~\ref{sec:ethics}
 discusses what that limits.
 

@@ -6,7 +6,9 @@ same MediaPipe features, varying the examples per sign from 1 to all and the voc
 The analysis was pre-registered, each method family chose its own preprocessing on validation signers, and intervals come from
 resampling the \nTestSigners{} test signers. Contrary to our pre-registered expectation, the learned models beat DTW at every number of
 examples per sign we tried: at 50 signs and 10 examples per sign the CNN scores \accCnnVFiftyKTen\% top-1 against \accDtwVFiftyKTen\% for DTW,
-and with all training data \accTransVFiftyKAll\% against \accDtwVFiftyKAll\%. Richer features and preprocessing raised DTW to at best
-\ablBestDtwKAll\% with all data. We report latency, training cost, ablations and limitations. This is an isolated-sign study on one
-dataset; it is not translation and makes no claim about benefit to Deaf users.
+and with all training data \accTransVFiftyKAll\% against \accDtwVFiftyKAll\%. A second, pre-registered replication on ASL Citizen
+(10 to 300 signs, \cznSignersTest{} test participants) supports both hypotheses again, and Euclidean nearest neighbour is at least as good as DTW in most cells
+on both datasets. Exploratory extensions (MiniRocket, longer training, per-$k$ tuning, richer features) raise some baselines, DTW to at best
+\ablBestDtwKAll\% with all PopSign data, but do not close the gap. We report latency, training cost, ablations and limitations. This is an isolated-sign
+study of one sign language on two datasets; it is not translation and makes no claim about benefit to Deaf users.
 \end{abstract}

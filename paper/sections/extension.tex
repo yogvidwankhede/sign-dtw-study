@@ -1,0 +1,33 @@
+\subsection{Exploratory extension: more baselines, longer training, per-$k$ tuning}
+\label{sec:extension}
+These analyses were added after the main PopSign results and the audit that followed (\texttt{PREREG\_ADDENDUM.md}, Part B); they are exploratory.
+\begin{table}[t]
+\centering\small
+\input{../results/tables/extension.tex}
+\caption{PopSign, 50 signs: top-1 accuracy (\%) of additional methods and variants (exploratory) beside the main ones.}
+\label{tab:ext}
+\end{table}
+\paragraph{Other nearest-neighbour variants.} Voting among several nearest references did not help: the number of neighbours chosen on validation was
+one for both DTW and Euclidean. Weighting feature dimensions by a Fisher score estimated from the references did not help either
+(\accWdtwVFiftyKAll\% with all examples against \accDtwVFiftyKAll\% for DTW).
+\paragraph{A stronger time-series baseline.} MiniRocket with a ridge classifier \citep{dempster2020rocket} is poor with one or two examples per sign
+(\accRocketVFiftyKOne\% and \accRocketVFiftyKTwo\%, against \accDtwVFiftyKOne\% and \accDtwVFiftyKTwo\% for DTW), about level with DTW at $k=5$
+and 10 (\accRocketVFiftyKFive\% and \accRocketVFiftyKTen\% against \accDtwVFiftyKFive\% and \accDtwVFiftyKTen\%), and above it from
+$k=20$ (\accRocketVFiftyKTwenty\% against \accDtwVFiftyKTwenty\%, and \accRocketVFiftyKAll\% against \accDtwVFiftyKAll\% with all examples)
+but well below the neural models (\accCnnVFiftyKAll\% for the CNN).
+\paragraph{Tuning per $k$ and longer training.} Re-selecting every method's settings separately for $k\in\{1,5,10,\text{all}\}$ on validation
+changed no cell by more than \perkMaxChange{} points. Training the learned models for 200 epochs with a step cap of 12{,}000 instead of the
+main budget changed accuracy by between \longMinGainCnn{} and \longMaxGainCnn{} points for the CNN, \longMinGainGru{} and \longMaxGainGru{} for
+the BiGRU and \longMinGainTrans{} and \longMaxGainTrans{} for the Transformer across all $k$ (Table~\ref{tab:ext}), so the main results
+were not far from converged and the gap to DTW did not close.
+
+\subsection{Descriptive analyses of why (exploratory)}
+We looked at three possible explanations; none clearly accounts for the gap. (1)~\emph{Hand slot.} MediaPipe assigns each hand to a left or right slot, and test signers differ:
+each signer uses predominantly one slot (at least \whyMinDominantShare\% of hand-present frames), with the share showing only the left slot between \whyLeftOnlyMin\% and
+\whyLeftOnlyMax\% and only the right slot between \whyRightOnlyMin\% and \whyRightOnlyMax\% across signers; \whyNLeftMajority{} of 8 mostly use the left
+slot. Swapping the slots of the test queries lowers accuracy only modestly (DTW with all examples \whySwapDtwNormalAll\% to \whySwapDtwSwappedAll\%,
+CNN \whySwapCnnNormalAll\% to \whySwapCnnSwappedAll\%), so the models are not tied to a single slot. The large gain from putting the more active hand in the first slot
+(Table~\ref{tab:abl}) is consistent with pooling a sign's few examples across signers who use different hands, which we did not test directly.
+(2)~\emph{Movement.} Per-sign wrist path length has no clear relation to the per-sign accuracy gap between the CNN and DTW
+(Spearman $\rho=\whyMotionRho$, 95\% bootstrap interval \whyMotionLo{} to \whyMotionHi{} over 50 signs).
+(3)~\emph{Feature scale or preprocessing.} Both were tuned for DTW on validation (Section~\ref{sec:results}). These analyses are descriptive; a causal account remains open.
