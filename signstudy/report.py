@@ -31,7 +31,15 @@ K_ORDER = [1, 2, 5, 10, 20, "full"]
 NUMW = {4: "Four", 10: "Ten", 50: "Fifty", 100: "Hundred", 250: "TwoFifty", 300: "ThreeHundred"}
 KW = {"1": "One", "2": "Two", "5": "Five", "10": "Ten", "20": "Twenty", "full": "All"}
 MW = {"dtw1nn": "Dtw", "euclid1nn": "Euclid", "dba_proto": "Dba", "cnn1d": "Cnn", "bigru": "Gru", "transformer": "Trans",
-      "bigru_aug": "GruAug", "cnn1d_aug": "CnnAug", "transformer_aug": "TransAug", "fastdtw_r1": "FastDtw", "legacy_fastdtw": "Legacy"}
+      "bigru_aug": "GruAug", "cnn1d_aug": "CnnAug", "transformer_aug": "TransAug", "fastdtw_r1": "FastDtw", "legacy_fastdtw": "Legacy",
+      "dtw_knn": "DtwKnn", "euclid_knn": "EuclidKnn", "wdtw1nn": "Wdtw", "minirocket": "Rocket", "dtw_perk": "DtwPerK",
+      "euclid_perk": "EuclidPerK", "cnn1d_perk": "CnnPerK", "bigru_perk": "GruPerK", "transformer_perk": "TransPerK",
+      "cnn1d_long": "CnnLong", "bigru_long": "GruLong", "transformer_long": "TransLong"}
+EXT_LABEL = {"dtw1nn": "DTW 1-NN (main)", "euclid1nn": "Euclidean 1-NN (main)", "dtw_knn": "DTW k-NN (kappa on validation)",
+             "wdtw1nn": "Fisher-weighted DTW", "minirocket": "MiniRocket + ridge", "dtw_perk": "DTW, tuned per k",
+             "cnn1d": "1D-CNN (main)", "cnn1d_perk": "1D-CNN, tuned per k", "cnn1d_long": "1D-CNN, 200 epochs",
+             "bigru": "BiGRU (main)", "bigru_long": "BiGRU, 200 epochs", "transformer": "Transformer (main)",
+             "transformer_long": "Transformer, 200 epochs"}
 
 
 def nm(prefix, method, v, k):
@@ -197,7 +205,7 @@ def paired_table(tab, led, vocabs):
     for v in vocabs:
         for k in map(str, K_ORDER):
             where = dict(vocab=v, k=k, fset="F1", dominant=False)
-            for m in ("euclid1nn", "cnn1d", "bigru", "transformer"):
+            for m in ("euclid1nn", "cnn1d", "bigru", "transformer", "minirocket", "wdtw1nn", "cnn1d_long", "bigru_long", "transformer_long"):
                 r = S.paired_difference(tab, m, "dtw1nn", where, conf=0.95)
                 if r:
                     rows.append(r)
@@ -205,7 +213,7 @@ def paired_table(tab, led, vocabs):
     if df.empty:
         return df
     df.to_csv(TABLES / "paired_vs_dtw.csv", index=False)
-    learned = df[df.a != "euclid1nn"]
+    learned = df[df.a.isin(["cnn1d", "bigru", "transformer"])]
     led.add("nPairedLearned", len(learned), "paired comparisons of a learned model with DTW (3 models x k x vocabulary)", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
     led.add("nPairedLearnedExcl", int(((learned.lo > 0) | (learned.hi < 0)).sum()), "of those, 95% intervals excluding zero", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
     led.add("nPairedLearnedAhead", int((learned["diff"] > 0).sum()), "of those, learned model's point estimate above DTW", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
@@ -306,6 +314,11 @@ def data_and_compute_stats(led, vocab=50):
             sp = getattr(cond, name)
             st["splits"][name] = dict(videos=len(sp.seqs) + sp.failed, no_hand=sp.failed,
                                       signers=len(set(sp.signer) | set(sp.failed_signer)))
+        if C.ASLC:
+            st["official_participants"] = {n: int(pd.read_csv(C.DATA / "aslc" / f"{n}.csv")["Participant ID"].nunique()) for n in ("train", "val", "test")}
+            big = X.build_condition(C.vocab(max(C.VOCAB_SIZES)), "F1", "zero")
+            st["max_vocab"] = {"vocab": max(C.VOCAB_SIZES), "test_queries": len(big.test.seqs) + big.test.failed,
+                               "train_videos": len(big.train.seqs) + big.train.failed, "no_hand_test": big.test.failed}
         log = C.LANDMARKS / "EXTRACTION_LOG.jsonl"
         if log.exists():
             rec = [_json.loads(l) for l in log.read_text().splitlines()]
@@ -325,6 +338,11 @@ def data_and_compute_stats(led, vocab=50):
         led.add(f"nNoHand{cap}", v["no_hand"], f"{name} videos with no hand detected in any frame (counted as errors)", "results/data_stats.json", fmt="{:d}")
         led.add(f"nSigners{cap}", v["signers"], f"signers in the {name} split", "results/data_stats.json", fmt="{:d}")
     pd.DataFrame(rows).to_csv(TABLES / "data_stats.csv", index=False)
+    for n, v in st.get("official_participants", {}).items():
+        led.add(f"nOfficial{n.capitalize()}", v, f"participants in the official {n} split of the full dataset", "results_aslc/data_stats.json", fmt="{:d}")
+    if "max_vocab" in st:
+        led.add("nQueriesMaxVocab", st["max_vocab"]["test_queries"], f"test queries at the largest vocabulary ({st['max_vocab']['vocab']} signs)", "results_aslc/data_stats.json", fmt="{:d}")
+        led.add("nTrainMaxVocab", st["max_vocab"]["train_videos"], "training videos at the largest vocabulary", "results_aslc/data_stats.json", fmt="{:d}")
     for key, name in (("cnn1d", "Cnn"), ("bigru", "Gru"), ("transformer", "Trans")):
         led.add(f"nParams{name}", M.n_params(M.build(key, st["d_in"], st["vocab"])), f"parameters of the {key} model for {st['d_in']}-dim input and {st['vocab']} classes", "signstudy/models.py", fmt="{:d}")
     if "extract_hours" in st:
@@ -340,6 +358,43 @@ def data_and_compute_stats(led, vocab=50):
                 if len(g):
                     led.add(f"trainSec{name}{kw}", g.train_s.mean(), f"mean training wall-clock seconds, {key}, vocabulary 50, k={k} (Apple GPU via MPS, machine shared)", "results/raw/test/*_training_time.csv.gz", fmt="{:.0f}")
         led.add("trainHours", allt.train_s.sum() / 3600, "total wall-clock hours spent training the main-grid learned models (excludes tuning, ablations, augmentation)", "results/raw/test/*_training_time.csv.gz")
+
+
+def extension_table(d):
+    """Exploratory extension methods against the main ones at one vocabulary (accuracy only)."""
+    v = 50 if 50 in set(d.vocab) else max(d.vocab)
+    g = d[d.vocab == v]
+    order = [m for m in EXT_LABEL if m in set(g.method)]
+    if "minirocket" not in order:
+        return
+    cols = [str(k) for k in K_ORDER if str(k) in set(g.k)]
+    p = g.pivot(index="method", columns="k", values="acc").reindex(order)[cols]
+    lines = ["\\begin{tabular}{l" + "r" * len(cols) + "}", "\\toprule", "Method & " + " & ".join("all" if c == "full" else c for c in cols) + " \\\\", "\\midrule"]
+    for m in order:
+        lines.append(EXT_LABEL[m] + " & " + " & ".join("--" if pd.isna(p.loc[m, c]) else f"{pct(p.loc[m, c]):.1f}" for c in cols) + " \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}"]
+    (TABLES / "extension.tex").write_text("\n".join(lines) + "\n")
+
+
+def why_macros(led):
+    f = C.RESULTS / "why.json"
+    if not f.exists():
+        return
+    w = json.loads(f.read_text())
+    led.add("whyLeftOnlyMin", pct(w["slot_left_only_min"]), "smallest per-signer share of hand-present frames with only the left slot (test signers)", "results/why.json")
+    led.add("whyLeftOnlyMax", pct(w["slot_left_only_max"]), "largest per-signer share with only the left slot", "results/why.json")
+    led.add("whyRightOnlyMin", pct(w["slot_right_only_min"]), "smallest per-signer share with only the right slot", "results/why.json")
+    led.add("whyRightOnlyMax", pct(w["slot_right_only_max"]), "largest per-signer share with only the right slot", "results/why.json")
+    led.add("whyNLeftMajority", w["slot_n_left_majority"], "test signers who mostly use the left slot", "results/why.json", fmt="{:d}")
+    for key, name in (("dtw1nn_normal_10", "DtwNormalTen"), ("dtw1nn_swapped_10", "DtwSwappedTen"), ("dtw1nn_normal_full", "DtwNormalAll"),
+                      ("dtw1nn_swapped_full", "DtwSwappedAll"), ("cnn1d_normal_10", "CnnNormalTen"), ("cnn1d_swapped_10", "CnnSwappedTen"),
+                      ("cnn1d_normal_full", "CnnNormalAll"), ("cnn1d_swapped_full", "CnnSwappedAll")):
+        led.add(f"whySwap{name}", pct(w["swap"][key]), f"top-1 %, slot-swap test: {key}", "results/why.json")
+    m = w["motion"]
+    led.add("whyMotionRho", m["rho"], "Spearman correlation of per-sign wrist path length with the per-sign CNN-minus-DTW accuracy gap", "results/why.json", fmt="{:.2f}")
+    led.add("whyMotionLo", m["lo"], "lower 95% bootstrap bound over signs", "results/why.json", fmt="{:.2f}")
+    led.add("whyMotionHi", m["hi"], "upper 95% bootstrap bound over signs", "results/why.json", fmt="{:.2f}")
+    led.add("whyMotionRhoDtw", m["rho_dtw_acc"], "Spearman correlation of path length with DTW's per-sign accuracy", "results/why.json", fmt="{:.2f}")
 
 
 def ablation_table(led):
@@ -466,6 +521,9 @@ def main():
     hypotheses(tab, led, v50)
     crossover(ci, led)
     paired_table(tab, led, vocabs)
+    extension_table(d)
+    if not C.ASLC:
+        why_macros(led)
     tuning_table(led)
     if not C.ASLC:
         legacy_macros(ci, led, df)
@@ -479,7 +537,7 @@ def main():
     timing_table(led)
     led.add("nVocabMax", max(vocabs), "largest vocabulary evaluated", "results/tables/main_top1.csv", fmt="{:d}")
     led.add("nTestSigners", int(tab.signer.nunique()), "test signers (bootstrap clusters)", "results/raw/test/dtw1nn.csv.gz", fmt="{:d}")
-    for m in ("dtw1nn", "euclid1nn", "cnn1d", "bigru", "transformer", "dba_proto", "cnn1d_aug", "bigru_aug", "transformer_aug"):
+    for m in [m for m in MW if m not in ("fastdtw_r1", "legacy_fastdtw")]:
         for v in vocabs:
             for k in map(str, K_ORDER):
                 r = d[(d.method == m) & (d.vocab == v) & (d.k == k)]

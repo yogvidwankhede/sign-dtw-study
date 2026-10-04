@@ -1,0 +1,24 @@
+{
+ "motion": {
+  "hi": 0.4225853653123153,
+  "lo": -0.18678712065956618,
+  "n": 50,
+  "rho": 0.1294899476242059,
+  "rho_dtw_acc": -0.09925025766769625
+ },
+ "slot_left_only_max": 0.9874221093930302,
+ "slot_left_only_min": 0.001017724055865222,
+ "slot_n_left_majority": 3,
+ "slot_right_only_max": 0.9925001565729317,
+ "slot_right_only_min": 0.0031156242787906763,
+ "swap": {
+  "cnn1d_normal_10": 0.6117004178720669,
+  "cnn1d_normal_full": 0.8563162970106075,
+  "cnn1d_swapped_10": 0.5920925747348119,
+  "cnn1d_swapped_full": 0.8360655737704918,
+  "dtw1nn_normal_10": 0.3856775850995504,
+  "dtw1nn_normal_full": 0.6339113680154143,
+  "dtw1nn_swapped_10": 0.35581245985870263,
+  "dtw1nn_swapped_full": 0.5915221579961464
+ }
+}

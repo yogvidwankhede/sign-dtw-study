@@ -1,6 +1,17 @@
 {
  "d_in": 420,
  "extract_hours": 0.28244444444444444,
+ "max_vocab": {
+  "no_hand_test": 6,
+  "test_queries": 3702,
+  "train_videos": 4427,
+  "vocab": 300
+ },
+ "official_participants": {
+  "test": 11,
+  "train": 35,
+  "val": 6
+ },
  "splits": {
   "test": {
    "no_hand": 1,
