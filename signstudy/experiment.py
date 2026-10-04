@@ -90,6 +90,19 @@ def sign_min_scores(dist, ref_sign, n_signs):
     return out
 
 
+def sign_knn_scores(dist, ref_sign, n_signs, kappa=1):
+    """Like sign_min_scores but a sign's score is the mean of its kappa smallest reference distances (kappa=1 -> minimum)."""
+    if kappa == 1:
+        return sign_min_scores(dist, ref_sign, n_signs)
+    out = np.full((dist.shape[0], n_signs), np.inf, dtype=np.float32)
+    for s in range(n_signs):
+        cols = np.flatnonzero(ref_sign == s)
+        if len(cols):
+            k = min(kappa, len(cols))
+            out[:, s] = np.partition(dist[:, cols], k - 1, axis=1)[:, :k].mean(axis=1)
+    return out
+
+
 def ranks_from_scores(scores, y):
     """Rank (1 = best) of the true sign; lower score is better. Ties are broken against the method (pessimistic)."""
     true = scores[np.arange(len(y)), y]

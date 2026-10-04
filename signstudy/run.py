@@ -68,7 +68,7 @@ def _ref_cols(cond, n_vocab, k, seed):
     return np.array(sorted(cols), dtype=int)
 
 
-def eval_distance(cond, split_name, dist, label, vocabs, ks, seeds, extra=None):
+def eval_distance(cond, split_name, dist, label, vocabs, ks, seeds, extra=None, kappa=1):
     """1-NN style evaluation from a (queries, all-train-refs) distance matrix."""
     split = getattr(cond, split_name)
     out = []
@@ -77,7 +77,7 @@ def eval_distance(cond, split_name, dist, label, vocabs, ks, seeds, extra=None):
         for k in ks:
             for seed in (seeds if k != "full" else seeds[:1]):
                 cols = _ref_cols(cond, n, k, seed)
-                sc = X.sign_min_scores(dist[qmask][:, cols], cond.train.y[cols], n)
+                sc = X.sign_knn_scores(dist[qmask][:, cols], cond.train.y[cols], n, kappa)
                 meta = dict(method=label, split=split_name, vocab=n, k=k, seed=seed if k != "full" else -1,
                             fset=cond.fset, missing=cond.missing, dominant=cond.dominant, **(extra or {}))
                 out.append(_rows(split, sc, split.y[qmask], n, meta))
@@ -111,7 +111,7 @@ def _frame_std(seqs):
     return np.where(sd < 1e-3, 1.0, sd).astype(np.float32)
 
 
-def eval_scaled(cond, split_name, label, vocabs, ks, seeds, kind="dtw", radius=-1):
+def eval_scaled(cond, split_name, label, vocabs, ks, seeds, kind="dtw", radius=-1, kappa=1, weights=None):
     """DTW or Euclidean 1-NN after dividing every feature dimension by its standard deviation over the selected
     references (the same standardisation the learned models get; centring cancels in differences)."""
     split = getattr(cond, split_name)
@@ -122,6 +122,8 @@ def eval_scaled(cond, split_name, label, vocabs, ks, seeds, kind="dtw", radius=-
             for seed in (seeds if k != "full" else seeds[:1]):
                 cols = _ref_cols(cond, n, k, seed)
                 sd = _frame_std([cond.train.seqs[i] for i in cols])
+                if weights is not None:
+                    sd = sd / np.sqrt(weights(cond, cols, sd))      # multiply features by sqrt(weight)
                 if kind == "dtw":
                     q = [F.dtw_sequence(split.seqs[i]) / sd for i in qmask]
                     r = [F.dtw_sequence(cond.train.seqs[i]) / sd for i in cols]
@@ -130,10 +132,10 @@ def eval_scaled(cond, split_name, label, vocabs, ks, seeds, kind="dtw", radius=-
                     q = np.stack([F.resample(split.seqs[i]) / sd for i in qmask])
                     r = np.stack([F.resample(cond.train.seqs[i]) / sd for i in cols])
                     d = L.euclid_matrix(q, r)
-                sc = X.sign_min_scores(d, cond.train.y[cols], n)
+                sc = X.sign_knn_scores(d, cond.train.y[cols], n, kappa)
                 meta = dict(method=label, split=split_name, vocab=n, k=k, seed=seed if k != "full" else -1,
                             fset=cond.fset, missing=cond.missing, dominant=cond.dominant,
-                            **({"radius": radius} if kind == "dtw" else {}))
+                            **({"radius": radius} if kind == "dtw" else {}), kappa=kappa)
                 out.append(_rows(split, sc, split.y[qmask], n, meta))
     return pd.concat(out, ignore_index=True)
 
@@ -168,7 +170,7 @@ def eval_prototypes(cond, split_name, vocabs, ks, seeds, radius=-1, max_iter=30,
     return pd.concat(out, ignore_index=True)
 
 
-def eval_learned(cond, split_name, model, vocabs, ks, seeds, lr=1e-3, aug=False, epochs=20, tag=None):
+def eval_learned(cond, split_name, model, vocabs, ks, seeds, lr=1e-3, aug=False, epochs=20, tag=None, cap=4000):
     split = getattr(cond, split_name)
     qx = np.stack([F.resample(x) for x in split.seqs])
     trx = np.stack([F.resample(x) for x in cond.train.seqs])
@@ -178,7 +180,7 @@ def eval_learned(cond, split_name, model, vocabs, ks, seeds, lr=1e-3, aug=False,
         for k in ks:
             for seed in (seeds if k != "full" else seeds[:1]):
                 cols = _ref_cols(cond, n, k, seed)
-                st = T.steps_for(len(cols), epochs=epochs)
+                st = T.steps_for(len(cols), epochs=epochs, hi=cap)
                 (logits,), secs, _ = T.fit_predict(model, trx[cols], cond.train.y[cols], [qx[qmask]], n, seed, st,
                                                    lr=lr, aug=aug)
                 meta = dict(method=(tag or model), split=split_name, vocab=n, k=k, seed=seed if k != "full" else -1,

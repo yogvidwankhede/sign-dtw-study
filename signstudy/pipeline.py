@@ -102,17 +102,20 @@ def _tuned():
     return json.loads(TUNED.read_text())
 
 
-def _dtw_family(cond, split, cfg, vocabs, label="dtw1nn"):
-    if cfg["scale"] == "raw":
+def _dtw_family(cond, split, cfg, vocabs, label="dtw1nn", kappa=1, ks=None, weights=None):
+    ks = KS if ks is None else ks
+    if cfg["scale"] == "raw" and weights is None:
         d = R.dtw_dist(cond, split, cfg["radius"])
-        return R.eval_distance(cond, split, d, label, vocabs, KS, SEEDS, extra=dict(radius=cfg["radius"], scale="raw"))
-    return R.eval_scaled(cond, split, label, vocabs, KS, SEEDS, kind="dtw", radius=cfg["radius"]).assign(scale="std")
+        return R.eval_distance(cond, split, d, label, vocabs, ks, SEEDS, extra=dict(radius=cfg["radius"], scale="raw"), kappa=kappa)
+    return R.eval_scaled(cond, split, label, vocabs, ks, SEEDS, kind="dtw", radius=cfg["radius"], kappa=kappa,
+                         weights=weights).assign(scale="std")
 
 
-def _euclid_family(cond, split, cfg, vocabs, label="euclid1nn"):
+def _euclid_family(cond, split, cfg, vocabs, label="euclid1nn", kappa=1, ks=None):
+    ks = KS if ks is None else ks
     if cfg["scale"] == "raw":
-        return R.eval_distance(cond, split, R.euclid_dist(cond, split), label, vocabs, KS, SEEDS, extra=dict(scale="raw"))
-    return R.eval_scaled(cond, split, label, vocabs, KS, SEEDS, kind="euclid").assign(scale="std")
+        return R.eval_distance(cond, split, R.euclid_dist(cond, split), label, vocabs, ks, SEEDS, extra=dict(scale="raw"), kappa=kappa)
+    return R.eval_scaled(cond, split, label, vocabs, ks, SEEDS, kind="euclid", kappa=kappa).assign(scale="std")
 
 
 def stage_main(split, n_max, which):

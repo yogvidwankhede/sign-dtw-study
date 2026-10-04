@@ -54,7 +54,8 @@ Decided after seeing the PopSign test results and the reviewer-style audit; labe
    kappa in {1, 3, 5} chosen on validation, for DTW and Euclidean. (b) Per-dimension weighted DTW: features are standardised and
    then multiplied by the square root of a Fisher score (between-sign over within-sign variance of per-video means, from the
    selected references, normalised to mean 1 and clipped to [0.1, 10]); with one reference per sign weights are 1. (c) MiniRocket
-   (aeon) with a ridge classifier on 32-frame standardised sequences, 10,000 kernels, no tuning. All on the main setting (F1).
+   (aeon) with a ridge classifier on 32-frame standardised sequences, 2,000 kernels (10,000 was too slow for the larger conditions),
+   no tuning, only for vocabularies up to 100. All on the main setting (F1).
 3. **Longer training.** The three learned models with an epoch budget of 200 and a step cap of 12,000, at vocabulary 50.
 4. **Per-k tuning.** Every family's validation selection repeated separately for k in {1, 5, 10, all} at vocabulary 50 (k=2 uses the
    k=1 choice and k=20 the k=10 choice), then evaluated on the test split.
