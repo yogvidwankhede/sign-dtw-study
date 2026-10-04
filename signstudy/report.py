@@ -213,6 +213,11 @@ def paired_table(tab, led, vocabs):
     if df.empty:
         return df
     df.to_csv(TABLES / "paired_vs_dtw.csv", index=False)
+    eu = df[df.a == "euclid1nn"]
+    led.add("nEuclidCells", len(eu), "(vocabulary, k) cells compared for Euclidean minus DTW", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
+    led.add("nEuclidAhead", int((eu["diff"] > 0).sum()), "of those, cells where Euclidean 1-NN's point estimate is above DTW's", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
+    led.add("nEuclidAheadExcl", int((eu.lo > 0).sum()), "of those, cells where the 95% interval of Euclidean minus DTW lies above zero", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
+    led.add("nEuclidBehindExcl", int((eu.hi < 0).sum()), "of those, cells where the interval lies below zero (DTW ahead)", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
     learned = df[df.a.isin(["cnn1d", "bigru", "transformer"])]
     led.add("nPairedLearned", len(learned), "paired comparisons of a learned model with DTW (3 models x k x vocabulary)", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
     led.add("nPairedLearnedExcl", int(((learned.lo > 0) | (learned.hi < 0)).sum()), "of those, 95% intervals excluding zero", "results/tables/paired_vs_dtw.csv", fmt="{:d}")
@@ -256,6 +261,10 @@ def tuning_table(led):
         led.add(f"tuneBest{name[fam]}", pct(g.val_top1.max()), f"validation top-1 of the chosen {fam} configuration (vocabulary {t['n_tune']}, k=10)", "results/tuned.json")
         led.add(f"tuneZero{name[fam]}", pct(g[g.missing == "zero"].val_top1.max()), f"best validation top-1 of {fam} with zero-filled missing hands", "results/tuned.json")
         led.add(f"tuneWorst{name[fam]}", pct(g.val_top1.min()), f"worst validation top-1 in the {fam} grid", "results/tuned.json")
+    chosen = {fam: t["families"][fam]["missing"] for fam in t["families"]}
+    for opt, w in (("zero", "Zero"), ("ffill", "Ffill"), ("drop", "Drop")):
+        led.add(f"tuneN{w}", sum(1 for v in chosen.values() if v == opt), f"method families whose validation-chosen missing-hand setting is {opt}", "results/tuned.json", fmt="{:d}")
+    led.add("tuneNFamilies", len(chosen), "method families tuned", "results/tuned.json", fmt="{:d}")
     ch = df[df.family == "dtw"].val_top1.max()
     nv = df[(df.family == "dtw") & (df.missing == "zero") & (df.scale == "raw") & (df.radius == -1)].val_top1
     if len(nv):
