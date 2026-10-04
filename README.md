@@ -2,7 +2,8 @@
 
 A pre-registered comparison of nearest-neighbour dynamic time warping (DTW) with a 1D-CNN, a BiGRU and a small Transformer,
 for isolated sign recognition from MediaPipe landmarks on PopSign ASL v1.0, with signer-independent splits, varying numbers of
-references per sign and vocabulary sizes. It is not sign language translation, and it makes no claim about benefit to Deaf users.
+references per sign and vocabulary sizes; plus a pre-registered replication on ASL Citizen (up to 300 signs) and exploratory
+extensions (`PREREG_ADDENDUM.md`). It is not sign language translation, and it makes no claim about benefit to Deaf users.
 
 Status: see `PREREG.md` (the plan, written before test results), `CLAIMS.md` (where each number comes from), and
 `HUMAN_TODO.md`. Nothing here has been published or pushed.
@@ -14,6 +15,7 @@ make setup                 # Python 3.11 venv, pinned requirements
 make test                  # unit tests (DTW engine vs tslearn, features, statistics)
 make quick VOCAB=10        # download -> landmarks -> tune on validation -> test grid -> ablations -> timing -> tables/figures
 make report                # regenerate every table, figure and paper/numbers.tex from results/raw
+SIGNSTUDY_DATASET=aslc python -m signstudy.aslc prepare   # ASL Citizen: fetch split files; then `... aslc extract 300`, `... pipeline tune|main`
 make paper                 # compile paper/paper.tex (tectonic)
 ```
 

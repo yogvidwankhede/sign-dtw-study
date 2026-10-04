@@ -43,3 +43,11 @@ Nothing here can be done by the code or by an assistant. Items marked (blocking)
 - The final paper text must be reviewed by you sentence by sentence; every number is generated, but the interpretations are drafts.
 - If you push, the repository is about 2 MB (cache files were removed from history); the landmark cache (`data/landmarks`, about 3 GB)
   stays local. Release hand and pose landmarks with `scripts/package_landmarks.py` only after confirming the CC BY 4.0 attribution text.
+
+## Added 2026-10-04 (second dataset and extensions)
+- (licence) **Delete the ASL Citizen landmarks when the research is complete**: `rm -rf data/landmarks_aslc data/aslc data/tmp_aslc` and
+  `results_aslc/raw` (per-query rows). The videos were already deleted after extraction. The licence requires destroying personal data and copies
+  at the end of the research; decide when that is (after the final submission and any revision). Only aggregate ASL Citizen results are in git.
+- Read the ASL Citizen licence (`use.txt` inside the dataset zip, also on the Microsoft page) yourself and confirm the use is consistent with it.
+- The PopSign vocabularies 100 and 250 were not run (extraction is slow: about 10-15 minutes per sign on this machine); `make extract VOCAB=100` continues if you want them.
+- The review (`REVIEW.md`) has a status table at the top showing which items from the first audit were addressed.
