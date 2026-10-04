@@ -417,6 +417,8 @@ def why_macros(led):
     led.add("whyLeftOnlyMax", pct(w["slot_left_only_max"]), "largest per-signer share with only the left slot", "results/why.json")
     led.add("whyRightOnlyMin", pct(w["slot_right_only_min"]), "smallest per-signer share with only the right slot", "results/why.json")
     led.add("whyRightOnlyMax", pct(w["slot_right_only_max"]), "largest per-signer share with only the right slot", "results/why.json")
+    su = pd.read_csv(C.RESULTS / "tables" / "why_slot_usage.csv")
+    led.add("whyMinDominantShare", pct(np.maximum(su.left_only, su.right_only).min()), "smallest per-signer share of hand-present frames in the signer's dominant slot (the larger of left-only and right-only)", "results/tables/why_slot_usage.csv")
     led.add("whyNLeftMajority", w["slot_n_left_majority"], "test signers who mostly use the left slot", "results/why.json", fmt="{:d}")
     for key, name in (("dtw1nn_normal_10", "DtwNormalTen"), ("dtw1nn_swapped_10", "DtwSwappedTen"), ("dtw1nn_normal_full", "DtwNormalAll"),
                       ("dtw1nn_swapped_full", "DtwSwappedAll"), ("cnn1d_normal_10", "CnnNormalTen"), ("cnn1d_swapped_10", "CnnSwappedTen"),
