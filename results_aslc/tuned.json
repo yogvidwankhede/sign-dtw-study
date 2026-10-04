@@ -1,0 +1,566 @@
+{
+ "n_tune": 50,
+ "k": 10,
+ "seed": 0,
+ "families": {
+  "dtw": {
+   "missing": "ffill",
+   "scale": "raw",
+   "radius": 3
+  },
+  "euclid": {
+   "missing": "ffill",
+   "scale": "std"
+  },
+  "cnn1d": {
+   "missing": "ffill",
+   "lr": 0.0003,
+   "epochs": 80
+  },
+  "bigru": {
+   "missing": "ffill",
+   "lr": 0.001,
+   "epochs": 80
+  },
+  "transformer": {
+   "missing": "drop",
+   "lr": 0.001,
+   "epochs": 80
+  }
+ },
+ "grids": {
+  "dtw": [
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": 3
+    },
+    0.574468085106383
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": 5
+    },
+    0.5797872340425532
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": 8
+    },
+    0.5797872340425532
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "raw",
+     "radius": -1
+    },
+    0.5797872340425532
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": 3
+    },
+    0.6117021276595744
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": 5
+    },
+    0.6063829787234043
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": 8
+    },
+    0.6063829787234043
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std",
+     "radius": -1
+    },
+    0.601063829787234
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": 3
+    },
+    0.7021276595744681
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": 5
+    },
+    0.6968085106382979
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": 8
+    },
+    0.7021276595744681
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw",
+     "radius": -1
+    },
+    0.7021276595744681
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": 3
+    },
+    0.6808510638297872
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": 5
+    },
+    0.6914893617021277
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": 8
+    },
+    0.6861702127659575
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std",
+     "radius": -1
+    },
+    0.6861702127659575
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": 3
+    },
+    0.6170212765957447
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": 5
+    },
+    0.6329787234042553
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": 8
+    },
+    0.6436170212765957
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw",
+     "radius": -1
+    },
+    0.6436170212765957
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": 3
+    },
+    0.6382978723404256
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": 5
+    },
+    0.6436170212765957
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": 8
+    },
+    0.648936170212766
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std",
+     "radius": -1
+    },
+    0.648936170212766
+   ]
+  ],
+  "euclid": [
+   [
+    {
+     "missing": "zero",
+     "scale": "raw"
+    },
+    0.574468085106383
+   ],
+   [
+    {
+     "missing": "zero",
+     "scale": "std"
+    },
+    0.6063829787234043
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "raw"
+    },
+    0.675531914893617
+   ],
+   [
+    {
+     "missing": "ffill",
+     "scale": "std"
+    },
+    0.723404255319149
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "raw"
+    },
+    0.5904255319148937
+   ],
+   [
+    {
+     "missing": "drop",
+     "scale": "std"
+    },
+    0.6276595744680851
+   ]
+  ],
+  "cnn1d": [
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.851063829787234
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.851063829787234
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8031914893617021
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8404255319148937
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8670212765957447
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8617021276595744
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.8297872340425532
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8723404255319149
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8723404255319149
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8723404255319149
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.7872340425531915
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8617021276595744
+   ]
+  ],
+  "bigru": [
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.7872340425531915
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.824468085106383
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.6117021276595744
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8085106382978723
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8297872340425532
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.851063829787234
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.601063829787234
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8404255319148937
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.7978723404255319
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8297872340425532
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.6117021276595744
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.824468085106383
+   ]
+  ],
+  "transformer": [
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8351063829787234
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8351063829787234
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.7872340425531915
+   ],
+   [
+    {
+     "missing": "zero",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.824468085106383
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8404255319148937
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8297872340425532
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.776595744680851
+   ],
+   [
+    {
+     "missing": "ffill",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8351063829787234
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 20
+    },
+    0.8404255319148937
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.001,
+     "epochs": 80
+    },
+    0.8617021276595744
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 20
+    },
+    0.824468085106383
+   ],
+   [
+    {
+     "missing": "drop",
+     "lr": 0.0003,
+     "epochs": 80
+    },
+    0.8404255319148937
+   ]
+  ]
+ },
+ "provenance": {}
+}

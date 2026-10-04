@@ -69,3 +69,15 @@ Decided after seeing the PopSign test results and the reviewer-style audit; labe
 
 The main PopSign results, tuned settings, hypotheses H1 and H2, and their outcome (H1 not supported, H2 supported) stay as
 reported. If Part B changes the picture, both versions are reported.
+
+## Frozen ASL Citizen settings (chosen on the validation participants at vocabulary 50, k=10, before any ASL Citizen test scoring)
+
+- dtw: {"missing": "ffill", "scale": "raw", "radius": 3}
+- euclid: {"missing": "ffill", "scale": "std"}
+- cnn1d: {"missing": "ffill", "lr": 0.0003, "epochs": 80}
+- bigru: {"missing": "ffill", "lr": 0.001, "epochs": 80}
+- transformer: {"missing": "drop", "lr": 0.001, "epochs": 80}
+
+A validation-only dry run of the whole main grid at 50 signs was done to check the code; it showed the same ordering as PopSign on
+validation data and its outputs were deleted. The tag `prereg-v2` marks the commit that contains these settings; the ASL
+Citizen test commands refuse to run without it.

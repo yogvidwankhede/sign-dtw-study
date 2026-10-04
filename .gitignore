@@ -19,3 +19,9 @@ paper/*.aux
 paper/*.blg
 paper/*.out
 paper/numbers_dev.tex
+results_aslc/raw/
+results_aslc/tables_dev/
+data/landmarks_aslc/
+data/aslc/
+data/tmp_aslc/
+data/features/
