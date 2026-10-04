@@ -92,7 +92,7 @@ def stage_tune(n_tune):
                     res.append((dict(missing=m, lr=lr, epochs=ep), _top1(df)))
                     print(mod, res[-1], flush=True)
         out["families"][mod], out["grids"][mod] = _pick(res)
-    out["provenance"] = R.provenance() if R.git("tag", "--list", "prereg-v1") else {}
+    out["provenance"] = R.provenance() if R.git("tag", "--list", C.PREREG_TAG) else {}
     TUNED.parent.mkdir(exist_ok=True)
     TUNED.write_text(json.dumps(out, indent=1))
     return out

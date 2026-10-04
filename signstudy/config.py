@@ -2,12 +2,20 @@
 from pathlib import Path
 import numpy as np
 
+import json
+import os
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
-LANDMARKS = DATA / "landmarks"
+# SIGNSTUDY_DATASET=aslc switches every path and grid to the ASL Citizen replication (PREREG_ADDENDUM.md).
+DATASET_ID = os.environ.get("SIGNSTUDY_DATASET", "popsign")
+ASLC = DATASET_ID == "aslc"
+LANDMARKS = DATA / ("landmarks_aslc" if ASLC else "landmarks")
 DISTANCES = DATA / "distances"
-RESULTS = ROOT / "results"
-FIGURES = ROOT / "figures"
+RESULTS = ROOT / ("results_aslc" if ASLC else "results")
+FIGURES = ROOT / ("figures_aslc" if ASLC else "figures")
+PREREG_TAG = "prereg-v2" if ASLC else "prereg-v1"
+MACRO_PREFIX = "cz" if ASLC else ""
 
 DATASET = "popsign_v1_0"
 CATEGORY = "game"
@@ -19,14 +27,18 @@ MEDIAPIPE_VERSION = "0.10.14"
 SHORT_SIDE = 480  # frames are resized so the short side is this many pixels before MediaPipe
 
 # Face landmarks are kept only as a local cache (never released); this is the set of contour vertices.
-VOCAB_SIZES = (10, 50, 100, 250)
-REFS_PER_SIGN = (1, 2, 5, 10, 20, "full")
+VOCAB_SIZES = (10, 50, 100, 300) if ASLC else (10, 50, 100, 250)
+REFS_PER_SIGN = (1, 2, 5, 10, "full") if ASLC else (1, 2, 5, 10, 20, "full")
 SEEDS = (0, 1, 2)
 TEST_PER_SIGNER_SIGN = 3   # test videos drawn per (test signer, sign)
 
 
 def sign_list():
-    """All 250 signs in the fixed pre-registered order (seeded permutation of the sorted list)."""
+    """All signs in the fixed pre-registered order (seeded permutation of the sorted list)."""
+    if ASLC:
+        keys = json.loads((DATA / "aslc" / "signs.json").read_text())["keys"]   # created by `python -m signstudy.aslc prepare`
+        order = np.random.default_rng(MASTER_SEED).permutation(len(keys))
+        return [keys[i] for i in order]
     signs = sorted((ROOT / "signs_game.txt").read_text().split())
     assert len(signs) == 250
     order = np.random.default_rng(MASTER_SEED).permutation(len(signs))

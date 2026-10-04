@@ -22,10 +22,11 @@ def git(*args):
 
 
 def guard_test_split():
-    if not git("tag", "--list", "prereg-v1"):
-        sys.exit("refusing to write test results: tag prereg-v1 does not exist")
-    if subprocess.run(["git", "-C", str(C.ROOT), "merge-base", "--is-ancestor", "prereg-v1", "HEAD"]).returncode:
-        sys.exit("prereg-v1 is not an ancestor of HEAD")
+    tag = C.PREREG_TAG
+    if not git("tag", "--list", tag):
+        sys.exit(f"refusing to write test results: tag {tag} does not exist")
+    if subprocess.run(["git", "-C", str(C.ROOT), "merge-base", "--is-ancestor", tag, "HEAD"]).returncode:
+        sys.exit(f"{tag} is not an ancestor of HEAD")
     if git("status", "--porcelain", "--", "signstudy", "PREREG.md", "tests"):
         sys.exit("uncommitted changes in signstudy/, tests/ or PREREG.md: commit them first")
 
@@ -35,7 +36,7 @@ def provenance():
     import mediapipe
     import torch
     import tslearn
-    return dict(commit=git("rev-parse", "HEAD"), prereg_diff=git("diff", "--stat", "prereg-v1", "HEAD", "--", "signstudy"),
+    return dict(commit=git("rev-parse", "HEAD"), prereg_diff=git("diff", "--stat", C.PREREG_TAG, "HEAD", "--", "signstudy") if git("tag", "--list", C.PREREG_TAG) else "",
                 python=sys.version.split()[0], numpy=np.__version__, torch=torch.__version__, tslearn=tslearn.__version__,
                 mediapipe=mediapipe.__version__, opencv=cv2.__version__, machine=platform.platform(),
                 time=time.strftime("%Y-%m-%d %H:%M:%S"))
