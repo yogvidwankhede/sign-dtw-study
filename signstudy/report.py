@@ -119,8 +119,10 @@ def main_table(tab, ci, led):
 def figure_main(ci, vocabs):
     d = ci[(ci.fset == "F1") & (~ci.dominant)]
     present = [k for k in K_ORDER if str(k) in set(d.k)]
-    fig, axes = plt.subplots(1, len(vocabs), figsize=(4.2 * len(vocabs), 3.6), sharey=True, squeeze=False)
-    for ax, v in zip(axes[0], vocabs):
+    ncols = len(vocabs) if len(vocabs) <= 2 else 2
+    nrows = int(np.ceil(len(vocabs) / ncols))
+    fig, axes = plt.subplots(nrows, ncols, figsize=(4.2 * ncols, 3.6 * nrows), sharey=True, squeeze=False)
+    for ax, v in zip(axes.ravel(), vocabs):
         for m in LABEL:
             g = d[(d.vocab == v) & (d.method == m)]
             if g.empty:
@@ -132,7 +134,10 @@ def figure_main(ci, vocabs):
         ax.set_xlabel("references per sign (k)")
         ax.set_title(f"{v} signs")
         ax.grid(alpha=0.3)
-    axes[0][0].set_ylabel("top-1 accuracy (%)")
+    for r in range(nrows):
+        axes[r][0].set_ylabel("top-1 accuracy (%)")
+    for ax in axes.ravel()[len(vocabs):]:
+        ax.axis("off")
     axes[0][-1].legend(fontsize=7, loc="lower right")
     fig.tight_layout()
     C.FIGURES.mkdir(exist_ok=True)
