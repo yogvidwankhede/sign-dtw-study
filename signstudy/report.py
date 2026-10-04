@@ -385,6 +385,29 @@ def extension_table(d):
     (TABLES / "extension.tex").write_text("\n".join(lines) + "\n")
 
 
+def perk_macros(d, led, vocab=50):
+    """Largest accuracy change from tuning per k instead of once (exploratory)."""
+    pairs = [("dtw_perk", "dtw1nn"), ("euclid_perk", "euclid1nn"), ("cnn1d_perk", "cnn1d"), ("bigru_perk", "bigru"), ("transformer_perk", "transformer")]
+    ch = []
+    for a, b in pairs:
+        x = d[(d.method == a) & (d.vocab == vocab)].set_index("k").acc
+        y = d[(d.method == b) & (d.vocab == vocab)].set_index("k").acc
+        both = x.index.intersection(y.index)
+        ch += [abs(100 * (x[k] - y[k])) for k in both]
+    if ch:
+        led.add("perkMaxChange", max(ch), "largest absolute top-1 change (percentage points) from tuning per k rather than once, over all methods and k (vocabulary 50)", "results/tables/main_top1.csv")
+
+
+def long_gain_macros(d, led, vocab=50):
+    for a, b, n in (("cnn1d_long", "cnn1d", "Cnn"), ("bigru_long", "bigru", "Gru"), ("transformer_long", "transformer", "Trans")):
+        x = d[(d.method == a) & (d.vocab == vocab)].set_index("k").acc
+        y = d[(d.method == b) & (d.vocab == vocab)].set_index("k").acc
+        both = x.index.intersection(y.index)
+        if len(both):
+            led.add(f"longMaxGain{n}", max(100 * (x[k] - y[k]) for k in both), f"largest gain (percentage points) of {a} over {b} across k (vocabulary {vocab})", "results/tables/main_top1.csv")
+            led.add(f"longMinGain{n}", min(100 * (x[k] - y[k]) for k in both), f"smallest gain (can be negative) of {a} over {b} across k", "results/tables/main_top1.csv")
+
+
 def why_macros(led):
     f = C.RESULTS / "why.json"
     if not f.exists():
@@ -531,6 +554,8 @@ def main():
     crossover(ci, led)
     paired_table(tab, led, vocabs)
     extension_table(d)
+    perk_macros(d, led)
+    long_gain_macros(d, led)
     if not C.ASLC:
         why_macros(led)
     tuning_table(led)
