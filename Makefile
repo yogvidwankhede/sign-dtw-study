@@ -4,7 +4,7 @@ PY = .venv/bin/python
 VOCAB ?= 10
 
 setup:
-	uv venv --python 3.11 .venv && uv pip install --python $(PY) -r requirements.txt
+	uv venv --python 3.11 .venv && uv pip install --python $(PY) -r requirements.txt && uv pip install --python $(PY) --no-deps -r requirements-extra.txt
 
 test:
 	$(PY) -m pytest -q tests

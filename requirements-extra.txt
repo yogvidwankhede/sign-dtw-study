@@ -1,0 +1,5 @@
+# Only needed for the MiniRocket baseline (signstudy/extra.py). aeon 1.6.0 declares numpy>=2, but MediaPipe 0.10.14 needs numpy<2.
+# The reported MiniRocket results were produced with aeon 1.6.0 running on numpy 1.26.4 (it works), so install WITHOUT resolving
+# dependencies, after requirements.txt:   uv pip install --no-deps -r requirements-extra.txt
+aeon==1.6.0
+deprecated
