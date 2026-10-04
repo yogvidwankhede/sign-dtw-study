@@ -8,7 +8,7 @@ Answers refer to the paper and repository. "Pending" items need the author or th
 
 ## B. Scientific artifacts
 - B1 Creators cited: yes (PopSign, MediaPipe, tslearn, fastdtw, earlier implementation).
-- B2 Licence and terms discussed: yes (`DATA.md`: PopSign CC BY 4.0; ASL Citizen terms noted but not used; code MIT proposed).
+- B2 Licence and terms discussed: yes (`DATA.md`: PopSign CC BY 4.0; ASL Citizen Microsoft Research License, used under its terms with aggregate-only release and deletion at the end; code MIT proposed).
 - B3 Use consistent with intended purpose: yes. PopSign's card lists isolated sign recognition as suitable and continuous signing,
   translation and identification as unsuitable; the study does only the former.
 - B4 Checked for identifying or offensive content: partly. Signer ids are anonymised by the dataset; videos show faces and are not

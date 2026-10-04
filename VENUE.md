@@ -20,3 +20,8 @@ arXiv: first-time submitters need an endorsement.
   result file, `CLAIMS.md`.
 - Compute: Apple M4 Max, no cloud spend; extraction time recorded in `data/landmarks/EXTRACTION_LOG.jsonl`.
 - AI-use disclosure: `LLM_DISCLOSURE.md`.
+
+## Update 2026-10-04
+A repeat search found no open call for the sign-language workshops. The only 2027 sign-language workshop that surfaced is SLTAT 2027 (Sign Language
+Translation and Avatar Technologies), 13-14 Oct 2027, with submission deadlines not yet announced; it is a translation and avatar venue, so a weaker fit.
+ACL-family workshop proposals were decided on 2 Oct 2026, so calls should appear in the coming months. arXiv first remains the plan.

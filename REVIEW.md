@@ -5,7 +5,8 @@ Written by the assistant that helped build the study, as an adversarial reviewer
 checklist); no suitable venue has an open call yet (`VENUE.md`), so ARR's form is used as the closest proxy for ACL-family
 sign-language workshops. The author must re-check the real form when a call is posted.
 
-**Recommendation: FIX-FIRST** (not "do not submit"). Priority list at the end.
+**Recommendation after round 2 (2026-10-04): still FIX-FIRST, but the scientific fixes are largely done; what is left is mostly yours (see the end).**
+The sections below are the round-1 audit (2026-10-01); "Round 2" at the end records what changed.
 
 ---
 
@@ -228,3 +229,31 @@ Prioritised fix list:
 7. Put intervals into Tables 1 and 2 in the paper.
 8. Re-verify the venue's real call, template, page limit and policies; run the CI on GitHub; time on a low-power device if
    available.
+
+---
+
+## Round 2 (2026-10-04): what was done about the round-1 weaknesses
+
+| Round-1 weakness | What was done | Status |
+|---|---|---|
+| 1. Narrow evidence (one dataset, 10 and 50 signs) | Pre-registered replication on ASL Citizen (`PREREG_ADDENDUM.md`, tag `prereg-v2` before test scoring), vocabularies 10/50/100/300, 11 test participants. Both hypotheses (H3, H4) supported. PopSign 100/250 not run (extraction too slow; stopped) | Mostly addressed; one sign language, two datasets |
+| 2. Features may disadvantage DTW | Already ablated; added drop-frames supplement, Fisher-weighted DTW, k-NN voting. None closes the gap | Addressed (DTW best case still far below) |
+| 3. Tuning protocol / grid edge / step cap | Per-k tuning (moves cells by at most 1.6 points on PopSign, 3.1 on ASL Citizen) and 200-epoch training with a 12,000-step cap (at most 2.3 points) | Addressed |
+| 4. Few test signers | ASL Citizen adds 11 test participants and 20 more (vocabulary, k) cells; the direction is the same; comparisons remain dependent | Partly addressed |
+| 5. Post-hoc elements | Addendum separates the pre-registered replication from the post-hoc extension; all post-freeze changes are listed | Addressed by disclosure |
+| 6. No explanation | Descriptive analyses (hand slot, slot swap, movement) point to no clear cause; stated as open | Addressed as far as the data allow |
+| 7. Timing thin | Unchanged: shared machine, no low-power device | Open |
+| 8. Not Deaf-led, feedback pending | Unchanged | **Open, blocking** |
+| Missing baselines | Added MiniRocket, k-NN voting, weighted DTW. Not added: learned embeddings with search, pre-trained or end-to-end video models | Partly addressed |
+
+New findings that a reviewer will care about: Euclidean 1-NN is at least as good as DTW in most cells on both datasets; MiniRocket is worse than DTW with
+one or two examples and better from about 5 (ASL Citizen) or 20 (PopSign) examples, but far below the neural models; per-k tuning matters more on ASL Citizen.
+
+New checks in round 2: signers/participants disjoint and zero duplicate sequences on ASL Citizen too; a fresh clone installs and regenerates every PopSign
+table, figure and number byte-identically (37 tests pass); the ASL Citizen aggregates cannot be regenerated from a clone because its per-query rows are not
+committed (licence). Problems found and fixed this round: `aeon` declared `numpy>=2` and made the requirements unsatisfiable (now
+`requirements-extra.txt`, installed without resolution); a guard-check stop in one background chain (re-run); a two-class edge case in the MiniRocket code.
+
+Still-open items (priority): (1) your author line, ORCID, anonymity if double-blind; (2) Deaf-community feedback or a statement that it was not done;
+(3) deleting the ASL Citizen landmarks when the research is complete (licence); (4) re-verify the venue call (none is open; SLTAT 2027, 13-14 Oct 2027, is a
+translation/avatar venue with deadlines not yet announced); (5) optional: PopSign 100/250, a learned-embedding baseline, low-power timing, GitHub CI run.

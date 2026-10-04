@@ -13,6 +13,7 @@ jobs:
         with:
           python-version: "3.11"
       - run: pip install -r requirements.txt
+      - run: pip install --no-deps -r requirements-extra.txt
       - run: python -m pytest -q tests
       # Regenerate every table and number from the committed per-query results and fail on any difference.
       - run: python -m signstudy.report
