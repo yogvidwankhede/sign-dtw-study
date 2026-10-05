@@ -1,0 +1,47 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{enumitem}
+\IfFileExists{../paper/numbers.tex}{\input{../paper/numbers.tex}}{}
+\setlength{\parindent}{0pt}\setlength{\parskip}{6pt}
+\title{A short summary for community feedback\\ \large Matching and learning for recognising isolated signs from hand landmarks}
+\author{[Researcher name, affiliation and contact: to be completed before sending]}
+\date{}
+\begin{document}
+\maketitle
+\textbf{Why we are writing.} I am a hearing researcher, and this project was not led by Deaf people. Before I submit a short methods
+paper, I would like your critique of how I describe what the work is and is not, and whether anything in it could mislead or cause harm.
+I would like to pay for your time. You are free to say that the work should not be published in this form.
+
+\textbf{What the study is.} It compares two ways for a computer to label a short video of one ASL sign from a fixed list: (1) comparing the
+sign with a few stored examples (``template matching''), and (2) small neural networks trained on examples. Both work from the positions of
+hands and body that a standard tool (MediaPipe) finds in each video frame; they do not look at faces. I used two published datasets with
+consent from Deaf signers (PopSign and ASL Citizen) and only isolated signs from vocabularies of up to 300 signs.
+
+\textbf{What I found.} The trained networks were more accurate than template matching at every number of examples I tried, including one
+example per sign. For example, with 50 signs and 10 examples per sign the best network was right about \accCnnVFiftyKTen\% of the time against
+\accDtwVFiftyKTen\% for template matching on new signers. With one example per sign and 50 signs no method exceeded \accTransVFiftyKOne\%.
+These are results on two datasets, for ASL only.
+
+\textbf{What the study is not.} It is not sign language translation or interpretation. It does not understand grammar, facial expressions or
+context. It says nothing about whether any such system helps Deaf people, and it does not claim to. Accuracy on isolated signs is not
+communication access. I do not want this work used as a reason to replace interpreters or other accommodations.
+
+\textbf{Data and consent.} The videos belong to the dataset owners; I deleted them after extracting hand and body positions, kept no face
+information from ASL Citizen, will not share ASL Citizen derived data, and make no attempt to identify anyone. I do not know how the
+participants feel about this specific use beyond the consent they gave the dataset creators.
+
+\textbf{What I would like to ask you.}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item Is it clear what this work is and is not? Is any sentence in the abstract or discussion misleading, or likely to be read as a claim of benefit?
+\item Is there Deaf-led research, a community position or a better framing I have missed?
+\item Is there any use of results like these that worries you, and should I say so in the paper?
+\item Should this be published, and if so, anything you would want changed or added?
+\end{enumerate}
+
+\textbf{What I will do with your answers.} I will record who was asked, what changed because of the feedback and what did not change and why. I will name you
+in the paper only if you agree. If I cannot get feedback before submission, the paper will say so instead of implying that the community was consulted.
+
+\textbf{Contact and payment.} [contact details; offer of payment for reviewers' time to be completed by the researcher]
+\end{document}
