@@ -118,26 +118,28 @@ def _euclid_family(cond, split, cfg, vocabs, label="euclid1nn", kappa=1, ks=None
     return R.eval_scaled(cond, split, label, vocabs, ks, SEEDS, kind="euclid", kappa=kappa).assign(scale="std")
 
 
-def stage_main(split, n_max, which):
+def stage_main(split, n_max, which, only_vocabs=None, suffix=""):
+    """only_vocabs/suffix: evaluate just the listed vocabularies and write files with a name suffix, so that earlier results
+    (whose queries came from a smaller condition) are not overwritten."""
     if split == "test":
         R.guard_test_split()
     t = _tuned()["families"]
     signs = C.vocab(n_max)
-    vocabs = vocabs_up_to(n_max)
+    vocabs = only_vocabs or vocabs_up_to(n_max)
     outs = []
     if "dtw" in which:
         cond = X.build_condition(signs, "F1", t["dtw"]["missing"])
         outs.append(_dtw_family(cond, split, t["dtw"], vocabs))
-        R.save(outs[-1], "dtw1nn", split)
+        R.save(outs[-1], "dtw1nn" + suffix, split)
     if "euclid" in which:
         cond = X.build_condition(signs, "F1", t["euclid"]["missing"])
         outs.append(_euclid_family(cond, split, t["euclid"], vocabs))
-        R.save(outs[-1], "euclid1nn", split)
+        R.save(outs[-1], "euclid1nn" + suffix, split)
     if "dba" in which:
         cond = X.build_condition(signs, "F1", t["dtw"]["missing"])
         outs.append(R.eval_prototypes(cond, split, vocabs, KS, SEEDS, radius=t["dtw"]["radius"],
                                       standardise=t["dtw"]["scale"] == "std"))
-        R.save(outs[-1], "dba_proto", split)
+        R.save(outs[-1], "dba_proto" + suffix, split)
     for m in MODELS:
         if m not in which:
             continue
@@ -145,8 +147,8 @@ def stage_main(split, n_max, which):
         cond = X.build_condition(signs, "F1", hp["missing"])
         df, tm = R.eval_learned(cond, split, m, vocabs, KS, SEEDS, lr=hp["lr"], epochs=hp["epochs"])
         outs.append(df)
-        R.save(df, m, split)
-        R.save(tm, m + "_training_time", split)
+        R.save(df, m + suffix, split)
+        R.save(tm, m + suffix + "_training_time", split)
     return outs
 
 
@@ -243,6 +245,8 @@ def main():
     ap.add_argument("--split", default="val", choices=["val", "test"])
     ap.add_argument("--vocab", type=int, default=10, help="number of signs to use (must be extracted)")
     ap.add_argument("--methods", nargs="*", default=["dtw", "euclid", "dba", *MODELS])
+    ap.add_argument("--only-vocabs", type=int, nargs="*", default=None)
+    ap.add_argument("--suffix", default="")
     a = ap.parse_args()
     if a.vocab > available_vocab():
         raise SystemExit(f"only {available_vocab()} signs are fully extracted")
@@ -250,7 +254,7 @@ def main():
     if a.stage == "tune":
         stage_tune(a.vocab)
     elif a.stage == "main":
-        stage_main(a.split, a.vocab, a.methods)
+        stage_main(a.split, a.vocab, a.methods, a.only_vocabs, a.suffix)
     elif a.stage == "ablate_drop":
         stage_ablate_drop(a.split, a.vocab)
     elif a.stage == "aug":
