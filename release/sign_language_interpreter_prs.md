@@ -10,5 +10,4 @@ rest differ by docstrings and a few lines. The PR restores the upstream copyrigh
 missing `spacy` and `pyttsx3`, and removes an unparseable editor scratch file.
 
 ## 3. tests-and-audit -> oss-standards (or main after 2)
-**Fix `dtw_distances` under current pandas, add tests, correct README.** `iterrows()` yields copies, so distances stayed 0 on pandas 3.0.6 (verified); results are collected and assigned back as a column. Adds six tests (pass without
-failing before the fix: 3 of 6), a CI test step, and README corrections (missing-hand handling, voting defaults: code `batch_size=1`, paper 2, upstream 5).
+**Fix `dtw_distances` under current pandas, add tests, correct README.** `iterrows()` yields copies, so distances stayed 0 on pandas 3.0.6 (verified); results are collected and assigned back as a column. Adds six tests (3 of the 6 fail without the fix and all pass with it), a CI test step, and README corrections (missing-hand handling, voting defaults: code `batch_size=1`, paper 2, upstream 5).
