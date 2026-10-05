@@ -81,3 +81,20 @@ reported. If Part B changes the picture, both versions are reported.
 A validation-only dry run of the whole main grid at 50 signs was done to check the code; it showed the same ordering as PopSign on
 validation data and its outputs were deleted. The tag `prereg-v2` marks the commit that contains these settings; the ASL
 Citizen test commands refuse to run without it.
+
+## Part B, second batch (added 2026-10-05; post-hoc, exploratory; written before these analyses were run)
+
+These two baselines answer the audit's remaining requests. Test results of the other methods are already known on both datasets, so nothing here is
+confirmatory.
+
+7. **Learned embedding with nearest-neighbour search (transfer from other signs).** A 1D-CNN (the main architecture, tuned settings of the CNN
+   family) is trained as a classifier on the training videos of *other* signs (ASL Citizen: signs 101-300 of the fixed order; PopSign: signs 51-100 if
+   extracted), using all their training examples. Its pooled hidden features (before the linear head) are then used as an embedding: a test query of
+   a sign among the first 50 is assigned to the sign of its nearest reference in embedding space (Euclidean after L2 normalisation), with k references per
+   sign drawn exactly as for the other methods. No training example of the evaluated signs is used to train the embedding. Reported for k in the usual set,
+   vocabulary 50, 3 seeds (embedding initialisation and reference draws).
+8. **Soft-DTW prototypes.** One soft-DTW barycentre per sign (tslearn 0.9.0 `softdtw_barycenter`) from the sign's references resampled to 32 frames, gamma chosen on
+   validation from {0.1, 1.0} at vocabulary 50 and k=10, then nearest prototype by exact DTW as for the DBA prototypes. Only vocabularies 10 and 50 and k up to 10
+   (barycentre fitting is slow); other conditions are reported as not run.
+9. **PopSign vocabulary 100.** Extraction was extended to 100 signs. The main grid for vocabulary 100 uses the frozen settings of `prereg-v1` (as
+   `PREREG.md` planned) and is evaluated on queries drawn when the 100-sign condition is built (independent of the 10- and 50-sign draws). Vocabulary 250 stays not run.
