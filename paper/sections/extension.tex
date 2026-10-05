@@ -10,6 +10,7 @@ These analyses were added after the main PopSign results and the audit that foll
 \paragraph{Other nearest-neighbour variants.} Voting among several nearest references did not help: the number of neighbours chosen on validation was
 one for both DTW and Euclidean. Weighting feature dimensions by a Fisher score estimated from the references did not help either
 (\accWdtwVFiftyKAll\% with all examples against \accDtwVFiftyKAll\% for DTW).
+\paragraph{Soft-DTW prototypes.} Like the DBA prototypes, soft-DTW prototypes do not improve with more references (\accSoftProtoVFiftyKOne\% at $k=1$, \accSoftProtoVFiftyKTen\% at $k=10$; run only for $k\le10$ at 10 and 50 signs).
 \paragraph{A stronger time-series baseline.} MiniRocket with a ridge classifier \citep{dempster2020rocket} is poor with one or two examples per sign
 (\accRocketVFiftyKOne\% and \accRocketVFiftyKTwo\%, against \accDtwVFiftyKOne\% and \accDtwVFiftyKTwo\% for DTW), about level with DTW at $k=5$
 and 10 (\accRocketVFiftyKFive\% and \accRocketVFiftyKTen\% against \accDtwVFiftyKFive\% and \accDtwVFiftyKTen\%), and above it from

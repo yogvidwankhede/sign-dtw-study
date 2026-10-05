@@ -12,6 +12,9 @@ from five on ASL Citizen, but stays far below the neural models; neighbour votin
 little (a few points at most). These checks make it less likely that the result comes from an under-tuned neural model or an unlucky DTW configuration, although
 they cannot rule out better template-matching or metric-learning methods that we did not try.
 
+\paragraph{Transfer.} On ASL Citizen, an embedding trained only on other signs gave the best accuracy with one or two examples per sign (Section~\ref{sec:replication}), which weakens the case for template
+matching further in the few-example regime, at the price of needing a training set of other signs; we did not run this on PopSign.
+
 \paragraph{Why DTW trails is only partly examined.} The descriptive analyses did not point to a clear cause: signers differ in which hand they sign with (which matters
 for the few-example regime, since the dominant-hand ablation lifts the neural models a lot), but swapping hand slots at test time costs little, and per-sign movement does not
 track the gap. Other plausible explanations remain untested: the per-frame angle features are noisy, so extra alignment freedom may bring unrelated signs closer; the learned

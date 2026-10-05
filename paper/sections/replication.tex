@@ -54,6 +54,11 @@ Neighbour voting again chose one neighbour. Fisher-weighted DTW is slightly bett
 \czaccRocketVFiftyKAll\% with all examples, but stays below the neural models (\czaccTransVFiftyKAll\% for the Transformer). Selecting settings per $k$ moves cells by up to \czperkMaxChange{} points and
 training for 200 epochs by between \czlongMinGainCnn{} and \czlongMaxGainCnn{} points for the CNN (BiGRU \czlongMinGainGru{} to \czlongMaxGainGru{}, Transformer \czlongMinGainTrans{} to \czlongMaxGainTrans{}),
 neither closing the gap.
+\paragraph{Soft-DTW prototypes and a learned embedding (exploratory).} Soft-DTW prototypes do no better than plain DTW (\czaccSoftProtoVFiftyKTen\% against \czaccDtwVFiftyKTen\% at $k=10$). A CNN trained
+only on 200 \emph{other} signs and then used as a fixed embedding for nearest-neighbour search, with no training on the evaluated signs, is the best method with the fewest examples:
+\czaccEmbedVFiftyKOne\% with one example per sign against \czaccTransVFiftyKOne\% for the best model trained from scratch (Transformer) and \czaccDtwVFiftyKOne\% for DTW,
+and \czaccEmbedVFiftyKTwo\% against \czaccTransVFiftyKTwo\% at two examples. It is level with the from-scratch models at five (\czaccEmbedVFiftyKFive\%) and falls behind from about ten examples
+(\czaccEmbedVFiftyKAll\% with all examples against \czaccTransVFiftyKAll\%), as it never adapts to the evaluated signs. This needs a training set of other signs, which template matching does not.
 \begin{table}[t]
 \centering\small
 \resizebox{\columnwidth}{!}{\input{../results_aslc/tables/extension.tex}}
