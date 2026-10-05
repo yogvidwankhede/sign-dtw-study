@@ -29,6 +29,8 @@ test rows from the landmark cache and compares them with the stored ones (DTW, E
 the machine that produced them; other hardware may differ for the learned models). Test queries are drawn once for the largest
 vocabulary and restricted to smaller ones, so a smaller vocabulary run on its own would draw different queries.
 
+Submission materials (arXiv folder, anonymous mirror, community-feedback summary, release drafts) are listed in `SUBMISSION.md`.
+
 ## Layout
 
 - `signstudy/` code: `extract.py` (download + MediaPipe), `features.py`, `dtwlib.py` (numba DTW checked against tslearn),

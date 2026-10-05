@@ -51,3 +51,8 @@ Nothing here can be done by the code or by an assistant. Items marked (blocking)
 - Read the ASL Citizen licence (`use.txt` inside the dataset zip, also on the Microsoft page) yourself and confirm the use is consistent with it.
 - The PopSign vocabularies 100 and 250 were not run (extraction is slow: about 10-15 minutes per sign on this machine); `make extract VOCAB=100` continues if you want them.
 - The review (`REVIEW.md`) has a status table at the top showing which items from the first audit were addressed.
+
+## Added 2026-10-05
+- Submission materials now exist locally; see `SUBMISSION.md` for the table of what is ready and the short list of what only you can do.
+- To send the community-feedback request: personalise `outreach/summary.tex` (name, contact, payment offer), compile it, and follow the steps in `ETHICS.md`.
+- For a double-blind venue: run `python scripts/make_anon.py`, re-check the grep report is 0, and submit only that copy's PDF and repository.
