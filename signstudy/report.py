@@ -34,9 +34,11 @@ MW = {"dtw1nn": "Dtw", "euclid1nn": "Euclid", "dba_proto": "Dba", "cnn1d": "Cnn"
       "bigru_aug": "GruAug", "cnn1d_aug": "CnnAug", "transformer_aug": "TransAug", "fastdtw_r1": "FastDtw", "legacy_fastdtw": "Legacy",
       "dtw_knn": "DtwKnn", "euclid_knn": "EuclidKnn", "wdtw1nn": "Wdtw", "minirocket": "Rocket", "dtw_perk": "DtwPerK",
       "euclid_perk": "EuclidPerK", "cnn1d_perk": "CnnPerK", "bigru_perk": "GruPerK", "transformer_perk": "TransPerK",
-      "cnn1d_long": "CnnLong", "bigru_long": "GruLong", "transformer_long": "TransLong"}
+      "cnn1d_long": "CnnLong", "bigru_long": "GruLong", "transformer_long": "TransLong",
+      "embed_nn": "Embed", "softdtw_proto": "SoftProto"}
 EXT_LABEL = {"dtw1nn": "DTW 1-NN (main)", "euclid1nn": "Euclidean 1-NN (main)", "dtw_knn": "DTW k-NN (kappa on validation)",
-             "wdtw1nn": "Fisher-weighted DTW", "minirocket": "MiniRocket + ridge", "dtw_perk": "DTW, tuned per k",
+             "wdtw1nn": "Fisher-weighted DTW", "minirocket": "MiniRocket + ridge", "dtw_perk": "DTW, tuned per k", "softdtw_proto": "Soft-DTW prototype",
+             "embed_nn": "Embedding (trained on other signs) + 1-NN",
              "cnn1d": "1D-CNN (main)", "cnn1d_perk": "1D-CNN, tuned per k", "cnn1d_long": "1D-CNN, 200 epochs",
              "bigru": "BiGRU (main)", "bigru_long": "BiGRU, 200 epochs", "transformer": "Transformer (main)",
              "transformer_long": "Transformer, 200 epochs"}
