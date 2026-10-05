@@ -166,10 +166,117 @@ def stage_perk(split, n):
     return tuned
 
 
+# ------------------------------------------------------- second batch (PREREG_ADDENDUM.md items 7-9)
+def eval_embedding(cond, split_name, n_eval, pre_from, ks, seeds, lr=1e-3, epochs=20, label="embed_nn"):
+    """Learned-embedding nearest neighbour: a CNN is trained on signs with index >= pre_from only; queries of the first n_eval signs
+    are matched to k references per sign in the CNN's pooled feature space (L2-normalised, Euclidean)."""
+    import torch
+    from . import models as M
+    from . import train as T
+    split = getattr(cond, split_name)
+    trx = np.stack([F.resample(x) for x in cond.train.seqs])
+    qx = np.stack([F.resample(x) for x in split.seqs])
+    pre = np.flatnonzero(cond.train.y >= pre_from)
+    n_cls = int(cond.train.y.max()) + 1 - pre_from
+    flat = trx[pre].reshape(-1, trx.shape[-1])
+    mu, sd = flat.mean(0), np.where(flat.std(0) < 1e-3, 1.0, flat.std(0))
+    out = []
+    dev = T.device()
+    for seed in seeds:
+        steps = T.steps_for(len(pre), epochs=epochs)
+        _, secs, model = T.fit_predict("cnn1d", trx[pre], cond.train.y[pre] - pre_from, [], n_cls, seed, steps, lr=lr)
+        model.eval()
+
+        def embed(x):
+            xt = torch.tensor((x - mu) / sd, dtype=torch.float32, device=dev)
+            with torch.no_grad():
+                h = torch.cat([model.net(xt[i:i + 512].transpose(1, 2)).mean(-1) for i in range(0, len(xt), 512)])
+                h2 = torch.cat([model.net(xt[i:i + 512].transpose(1, 2)).amax(-1) for i in range(0, len(xt), 512)])
+            e = torch.cat([h, h2], dim=-1).cpu().numpy()
+            return e / np.maximum(np.linalg.norm(e, axis=1, keepdims=True), 1e-9)
+
+        etr, eq = embed(trx), embed(qx)
+        qmask = np.flatnonzero(split.y < n_eval)
+        d_all = np.sqrt(np.maximum(((eq[qmask][:, None, :] - etr[None, :, :]) ** 2).sum(-1), 0)).astype(np.float32)
+        print(label, "seed", seed, "embedding trained on", n_cls, "other signs in", round(secs), "s", flush=True)
+        for k in ks:
+            if k == "full" and seed != seeds[0]:
+                continue
+            cols = R._ref_cols(cond, n_eval, k, seed)
+            sc = X.sign_min_scores(d_all[:, cols], cond.train.y[cols], n_eval)
+            meta = dict(method=label, split=split_name, vocab=n_eval, k=k, seed=seed if k != "full" else -1,
+                        fset=cond.fset, missing=cond.missing, dominant=cond.dominant)
+            out.append(R._rows(split, sc, split.y[qmask], n_eval, meta))
+    return pd.concat(out, ignore_index=True)
+
+
+def eval_softdtw_proto(cond, split_name, vocabs, ks, seeds, gamma, radius, standardise, label="softdtw_proto"):
+    from tslearn.barycenters import softdtw_barycenter
+    from . import dtwlib as L
+    split = getattr(cond, split_name)
+    n_all = max(vocabs)
+    out = []
+    for k in ks:
+        for seed in (seeds if k != "full" else seeds[:1]):
+            order = X.orders_for(cond, seed)
+            sd = (R._frame_std([cond.train.seqs[i] for i in R._ref_cols(cond, n_all, k, seed)]) if standardise else np.float32(1.0))
+            protos = []
+            for s in cond.signs[:n_all]:
+                idx = order[s] if k == "full" else order[s][:k]
+                xs = np.stack([F.resample(cond.train.seqs[i]) / sd for i in idx])
+                protos.append(xs[0] if len(xs) == 1 else
+                              softdtw_barycenter(xs, gamma=gamma, max_iter=50, tol=1e-3).astype(np.float32))
+            q = [F.dtw_sequence(x) / sd for x in split.seqs]
+            dist = L.dtw_matrix(q, protos, radius)
+            for n in vocabs:
+                qmask = split.y < n
+                meta = dict(method=label, split=split_name, vocab=n, k=k, seed=seed if k != "full" else -1,
+                            fset=cond.fset, missing=cond.missing, dominant=cond.dominant, gamma=gamma)
+                out.append(R._rows(split, dist[qmask][:, :n], split.y[qmask], n, meta))
+    return pd.concat(out, ignore_index=True)
+
+
+def stage_tune_gamma(n_tune=50):
+    from . import pipeline as P
+    t = P._tuned()["families"]["dtw"]
+    cond = X.build_condition(C.vocab(n_tune), "F1", t["missing"])
+    res = []
+    for g in (0.1, 1.0):
+        df = eval_softdtw_proto(cond, "val", [n_tune], [10], [0], g, t["radius"], t["scale"] == "std")
+        res.append(({"gamma": g}, float((df["rank"] <= 1).mean())))
+        print("softdtw gamma", res[-1], flush=True)
+    best, _ = P._pick(res)
+    ke = json.loads((C.RESULTS / "tuned_extra.json").read_text())
+    ke["softdtw"] = best
+    ke["softdtw_grid"] = res
+    (C.RESULTS / "tuned_extra.json").write_text(json.dumps(ke, indent=1))
+    return best
+
+
+def stage_second_batch(split, n_max, which, pre_from):
+    from . import pipeline as P
+    if split == "test":
+        R.guard_test_split()
+    t = P._tuned()["families"]
+    signs = C.vocab(n_max)
+    if "embed" in which:
+        hp = t["cnn1d"]
+        cond = X.build_condition(signs, "F1", hp["missing"])
+        R.save(eval_embedding(cond, split, 50, pre_from, list(C.REFS_PER_SIGN), list(C.SEEDS), lr=hp["lr"], epochs=hp["epochs"]),
+               "extra_embed_nn", split)
+    if "softdtw" in which:
+        ke = json.loads((C.RESULTS / "tuned_extra.json").read_text())
+        cond = X.build_condition(C.vocab(50), "F1", t["dtw"]["missing"])
+        ks = [k for k in C.REFS_PER_SIGN if k != "full" and k <= 10]
+        R.save(eval_softdtw_proto(cond, split, [10, 50], ks, list(C.SEEDS), ke["softdtw"]["gamma"], t["dtw"]["radius"],
+                                  t["dtw"]["scale"] == "std"), "extra_softdtw_proto", split)
+
+
 if __name__ == "__main__":
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument("stage", choices=["tune_kappa", "run", "perk"])
+    ap.add_argument("stage", choices=["tune_kappa", "run", "perk", "tune_gamma", "second"])
+    ap.add_argument("--pre-from", type=int, default=100, help="embedding baseline: first sign index used for embedding training")
     ap.add_argument("--split", default="val")
     ap.add_argument("--vocab", type=int, default=50, help="largest vocabulary / tuning vocabulary")
     ap.add_argument("--vocabs", type=int, nargs="*")
@@ -177,6 +284,10 @@ if __name__ == "__main__":
     a = ap.parse_args()
     if a.stage == "tune_kappa":
         stage_tune_kappa(a.vocab)
+    elif a.stage == "tune_gamma":
+        stage_tune_gamma(a.vocab)
+    elif a.stage == "second":
+        stage_second_batch(a.split, a.vocab, a.which, a.pre_from)
     elif a.stage == "run":
         stage_extra(a.split, a.vocab, a.vocabs or [a.vocab], a.which)
     else:
