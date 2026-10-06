@@ -11,6 +11,10 @@ These analyses were added after the main PopSign results and the audit that foll
 one for both DTW and Euclidean. Weighting feature dimensions by a Fisher score estimated from the references did not help either
 (\accWdtwVFiftyKAll\% with all examples against \accDtwVFiftyKAll\% for DTW).
 \paragraph{Soft-DTW prototypes.} Like the DBA prototypes, soft-DTW prototypes do not improve with more references (\accSoftProtoVFiftyKOne\% at $k=1$, \accSoftProtoVFiftyKTen\% at $k=10$; run only for $k\le10$ at 10 and 50 signs).
+\paragraph{A learned embedding from other signs.} A CNN trained only on the other 50 signs of the 100-sign vocabulary (signs 51 to 100, the same training signers), used as a fixed embedding for
+nearest-neighbour search on the first 50 signs, is the best method with few examples: \accEmbedVFiftyKOne\% with one example per sign against \accTransVFiftyKOne\% for the best model trained from scratch and
+\accDtwVFiftyKOne\% for DTW, \accEmbedVFiftyKFive\% against \accCnnVFiftyKFive\% (CNN) at five examples and \accEmbedVFiftyKTen\% against \accCnnVFiftyKTen\% at ten. From twenty examples the from-scratch models overtake it
+(\accEmbedVFiftyKTwenty\% against \accCnnVFiftyKTwenty\%, and \accEmbedVFiftyKAll\% against \accTransVFiftyKAll\% with all examples). It needs a training corpus of other signs, which template matching does not.
 \paragraph{A stronger time-series baseline.} MiniRocket with a ridge classifier \citep{dempster2020rocket} is poor with one or two examples per sign
 (\accRocketVFiftyKOne\% and \accRocketVFiftyKTwo\%, against \accDtwVFiftyKOne\% and \accDtwVFiftyKTwo\% for DTW), about level with DTW at $k=5$
 and 10 (\accRocketVFiftyKFive\% and \accRocketVFiftyKTen\% against \accDtwVFiftyKFive\% and \accDtwVFiftyKTen\%), and above it from

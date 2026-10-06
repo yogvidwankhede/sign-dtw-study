@@ -257,3 +257,10 @@ committed (licence). Problems found and fixed this round: `aeon` declared `numpy
 Still-open items (priority): (1) your author line, ORCID, anonymity if double-blind; (2) Deaf-community feedback or a statement that it was not done;
 (3) deleting the ASL Citizen landmarks when the research is complete (licence); (4) re-verify the venue call (none is open; SLTAT 2027, 13-14 Oct 2027, is a
 translation/avatar venue with deadlines not yet announced); (5) optional: PopSign 100/250, a learned-embedding baseline, low-power timing, GitHub CI run.
+
+## Round 3 (2026-10-06)
+
+- PopSign vocabulary 100 now exists (frozen settings, independent query draw): the learned models remain ahead of DTW at every k. PopSign 250 is still not run.
+- A learned embedding trained on other signs (both datasets) is the best method with the fewest examples (one example per sign: about 48% on PopSign and 52% on ASL Citizen at 50 signs, against 17% and 32% for DTW); from-scratch models overtake it from about 10 to 20 examples. Soft-DTW prototypes are no better than DBA prototypes.
+- Reproducibility incidents handled and recorded: disk full during extraction (resumed), the project virtual environment removed externally (rebuilt from pinned requirements), a memory-hungry distance computation (replaced, results verified identical), one archive with a different capitalisation on the server.
+- Still open: the human items (author line, community feedback, anonymity, publishing, ASL Citizen deletion), PopSign 250, low-power timing, GitHub CI run.

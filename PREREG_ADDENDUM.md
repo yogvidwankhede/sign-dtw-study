@@ -99,7 +99,8 @@ confirmatory.
 9. **PopSign vocabulary 100.** Extraction was extended to 100 signs. The main grid for vocabulary 100 uses the frozen settings of `prereg-v1` (as
    `PREREG.md` planned) and is evaluated on queries drawn when the 100-sign condition is built (independent of the 10- and 50-sign draws). Vocabulary 250 stays not run.
 
-### Outcome of the second batch (2026-10-06)
-Items 7 and 8 were run on ASL Citizen (embedding transfer, soft-DTW) and soft-DTW on PopSign. **Item 9 (PopSign vocabulary 100) was not completed:** extraction reached 85 of
-100 signs and then crashed with a write error because the disk was full (other processes on the machine had filled it; only about 4 GB were free afterwards, too little to
-continue). PopSign vocabulary 100, and the PopSign version of the embedding baseline (which needs signs 51-100), are therefore reported as not run.
+### Outcome of the second batch (updated 2026-10-06)
+Items 7 and 8 were run (embedding transfer on ASL Citizen and PopSign; soft-DTW on both). Item 9 (PopSign vocabulary 100) was first interrupted at 85 signs when the machine's
+disk filled; the disk was later freed, the extraction was resumed (one archive, `TV.tar`, needed an uppercase file name on the server) and finished, and the 100-sign grid was run with the
+frozen `prereg-v1` settings and an independent query draw. The first run of the embedding baseline on PopSign was killed for memory (an oversized distance array); the fix is
+mathematically identical, and a rerun of the ASL Citizen embedding baseline with it gave identical ranks and predictions. PopSign vocabulary 250 stays not run.

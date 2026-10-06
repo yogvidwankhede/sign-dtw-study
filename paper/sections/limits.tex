@@ -5,7 +5,7 @@
 signs) and ASL Citizen (crowd-sourced webcam video). We do not test other languages, cameras or continuous signing.
 \item \textbf{Few signers.} The PopSign test split has 8 signers and ASL Citizen 11 participants, so signer-clustered intervals are wide and small
 differences are not resolvable. Training noise (3 seeds) is smaller than signer variation.
-\item \textbf{Vocabulary range.} The vocabulary sweep reaches 300 signs only on ASL Citizen; on PopSign only 10 and 50 signs were run.
+\item \textbf{Vocabulary range.} The vocabulary sweep reaches 300 signs only on ASL Citizen; on PopSign it reaches 100 signs (the 100-sign condition uses settings tuned at 50 signs and an independent query draw).
 \item \textbf{Small models, limited tuning.} The learned models are small and tuned on a small grid at one condition
 (50 signs, 10 examples per sign). All three chose the longest epoch budget in the grid. Longer training and per-$k$ tuning changed little (Section~\ref{sec:extension}), but larger models
 or pre-training may change the picture.
@@ -13,7 +13,7 @@ or pre-training may change the picture.
 earlier implementation, which carry no hand location or orientation. DTW and Euclidean matching each chose among the preprocessing
 options listed in Section~\ref{sec:methods} on validation signers, and richer features helped both families (Table~\ref{tab:abl}), but other options, local costs or
 learned metrics might favour template matching more.
-\item \textbf{Baselines not run.} We ran one learned-embedding baseline (trained on other signs, ASL Citizen only; cf. \citealp{vandendriessche2025onesh}) but not the full set of time-series classifiers in
+\item \textbf{Baselines not run.} We ran one learned-embedding baseline (trained on other signs; cf. \citealp{vandendriessche2025onesh}) but not the full set of time-series classifiers in
 the bake-off \citep{bagnall2017bakeoff}, nor large pre-trained or end-to-end video models.
 \item \textbf{Landmark quality.} Results depend on MediaPipe 0.10.14 and on the resize used; the fraction of videos or frames
 without detected hands is reported. Face and other non-manual signals are mostly not modelled.

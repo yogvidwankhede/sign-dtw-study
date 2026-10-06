@@ -17,7 +17,7 @@ Answers refer to the paper and repository. "Pending" items need the author or th
 - B6 Statistics of data and splits: yes (paper, Data and methods; `results/tables/data_stats.csv`).
 
 ## C. Computational experiments
-- C1 Parameters, compute, infrastructure: yes. About 0.46-0.57 M parameters per model; Apple M4 Max laptop, no cloud; extraction and
+- C1 Parameters, compute, infrastructure: yes. About 0.46-0.57 M parameters per model (the embedding baseline is the same CNN); Apple M4 Max laptop, no cloud; extraction and
   training hours are generated macros in the paper's reproducibility text (pending: final wording).
 - C2 Setup and hyperparameter search: yes (tuning grids in `results/tuned.json` and `results/tables/tuning_validation.csv`).
 - C3 Descriptive statistics: yes (signer-clustered intervals; seed spread in `results/raw`).

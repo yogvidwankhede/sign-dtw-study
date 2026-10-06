@@ -26,7 +26,8 @@ At a vocabulary of 50 signs and 10 examples per sign, the 1D-CNN reaches \accCnn
 \accDtwVFiftyKTen\% (\accLoDtwVFiftyKTen--\accHiDtwVFiftyKTen) for DTW 1-NN and \accEuclidVFiftyKTen\% for Euclidean 1-NN
 (Table~\ref{tab:main50}, Figure~\ref{fig:acc}). With all training videos the learned models reach \accTransVFiftyKAll\%
 (Transformer), \accCnnVFiftyKAll\% (CNN) and \accGruVFiftyKAll\% (BiGRU), and DTW \accDtwVFiftyKAll\%. At 10 signs the ordering
-is the same: \accCnnVTenKAll\% (CNN) and \accDtwVTenKAll\% (DTW) with all training videos.
+is the same: \accCnnVTenKAll\% (CNN) and \accDtwVTenKAll\% (DTW) with all training videos. At 100 signs (settings frozen at 50 signs; queries drawn when that condition was built)
+the CNN reaches \accCnnVHundredKAll\% with all training videos against \accDtwVHundredKAll\% for DTW, and \accCnnVHundredKOne\% against \accDtwVHundredKOne\% with one example per sign.
 
 \subsection{Pre-registered hypotheses}
 \textbf{H1 is not supported.} We expected DTW to beat each learned model at vocabulary 50 with $k\le5$. Instead every learned
@@ -36,9 +37,9 @@ model is above DTW at $k=1$, 2 and 5: \nHOneBelowZero{} of the nine paired diffe
 above DTW by about \difCnnVFiftyKAll{} (CNN), \difTransVFiftyKAll{} (Transformer) and \difGruVFiftyKAll{} (BiGRU) points, and the intervals remain above zero when adjusted for three comparisons (\hTwoAdjSupported).
 
 \subsection{No crossover in the tested range}
-We looked for the number of examples per sign at which learned models overtake DTW and found none: at both vocabularies the best
-learned model is at or above DTW from $k=1$ upwards (smallest such $k$: \crossoverTen{} at 10 signs, \crossoverFifty{} at 50).
-In \nPairedLearnedExcl{} of the \nPairedLearned{} comparisons of a learned model with DTW (3 models, 6 values of $k$, 2 vocabularies) the 95\% interval excludes
+We looked for the number of examples per sign at which learned models overtake DTW and found none: at every vocabulary the best
+learned model is at or above DTW from $k=1$ upwards (smallest such $k$: \crossoverTen{} at 10 signs, \crossoverFifty{} at 50, \crossoverHundred{} at 100).
+In \nPairedLearnedExcl{} of the \nPairedLearned{} comparisons of a learned model with DTW (3 models, 6 values of $k$, \nVocabCount{} vocabularies) the 95\% interval excludes
 zero, and in \nPairedLearnedAhead{} the learned model's point estimate is higher (exploratory; no multiplicity correction). The gap is smallest at $k=1$, where every method is weak: at 50 signs no method
 exceeds \accTransVFiftyKOne\% (Transformer, the best) with one example per sign. Euclidean 1-NN is not worse than DTW at 50 signs:
 it is ahead by \difEuclidVFiftyKTwo, \difEuclidVFiftyKFive{} and \difEuclidVFiftyKTen{} points at $k=2$, 5 and 10 (intervals exclude zero) and indistinguishable at $k=1$, 20 and ``all'' (\difEuclidVFiftyKOne, \difEuclidVFiftyKTwenty{} and \difEuclidVFiftyKAll{} points). At 10 signs DTW is clearly ahead
@@ -111,8 +112,7 @@ processes running, and no low-power device was available. These costs exclude Me
 \input{sections/extension}
 
 \subsection{Coverage}
-On PopSign, vocabularies of 100 and 250 signs were not run: landmark extraction for 50 signs took \extractHours{} hours on this machine and
-the larger vocabularies would have taken several times longer. An attempt to extend PopSign to 100 signs reached 85 signs and then stopped when the machine's disk filled,
-so no PopSign result exists beyond 50 signs. The vocabulary sweep up to 300 signs is on ASL Citizen
+On PopSign, a vocabulary of 250 signs was not run: landmark extraction for 50 signs took \extractHours{} hours on this machine, and the extension to 100 signs was interrupted once when the
+disk filled and resumed later, so 250 signs would have taken several times longer again. The vocabulary sweep up to 300 signs is on ASL Citizen
 (Section~\ref{sec:replication}). Soft-DTW prototypes, planned in the pre-registration, were not run. Of the \nVideosTest{} test queries at 50 signs,
 \nNoHandTest{} had no detected hand and is counted as an error; the training and validation splits have \nNoHandTrain{} and \nNoHandVal{} such videos.
