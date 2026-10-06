@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT.parent / (ROOT.name + "-anon")
-DROP = {"HUMAN_TODO.md", "REVIEW.md", "paper/paper.pdf", "CITATION.cff"}
+DROP = {"HUMAN_TODO.md", "REVIEW.md", "paper/paper.pdf", "CITATION.cff", "scripts/make_anon.py", ".zenodo.json", "SUBMISSION.md"}
 DROP_PREFIX = ("outreach/", "release/", "arxiv", "paper/verify/", "data/")
 DROP |= {"paper/references_registry.bib"}
 REPL = [
