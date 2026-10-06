@@ -112,6 +112,7 @@ processes running, and no low-power device was available. These costs exclude Me
 
 \subsection{Coverage}
 On PopSign, vocabularies of 100 and 250 signs were not run: landmark extraction for 50 signs took \extractHours{} hours on this machine and
-the larger vocabularies would have taken several times longer. The vocabulary sweep up to 300 signs is on ASL Citizen
+the larger vocabularies would have taken several times longer. An attempt to extend PopSign to 100 signs reached 85 signs and then stopped when the machine's disk filled,
+so no PopSign result exists beyond 50 signs. The vocabulary sweep up to 300 signs is on ASL Citizen
 (Section~\ref{sec:replication}). Soft-DTW prototypes, planned in the pre-registration, were not run. Of the \nVideosTest{} test queries at 50 signs,
 \nNoHandTest{} had no detected hand and is counted as an error; the training and validation splits have \nNoHandTrain{} and \nNoHandVal{} such videos.
