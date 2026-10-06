@@ -197,7 +197,8 @@ def eval_embedding(cond, split_name, n_eval, pre_from, ks, seeds, lr=1e-3, epoch
 
         etr, eq = embed(trx), embed(qx)
         qmask = np.flatnonzero(split.y < n_eval)
-        d_all = np.sqrt(np.maximum(((eq[qmask][:, None, :] - etr[None, :, :]) ** 2).sum(-1), 0)).astype(np.float32)
+        # embeddings are unit length, so ||a-b||^2 = 2 - 2 a.b (avoids a queries x references x dimensions intermediate)
+        d_all = np.sqrt(np.maximum(2.0 - 2.0 * (eq[qmask] @ etr.T), 0)).astype(np.float32)
         print(label, "seed", seed, "embedding trained on", n_cls, "other signs in", round(secs), "s", flush=True)
         for k in ks:
             if k == "full" and seed != seeds[0]:
