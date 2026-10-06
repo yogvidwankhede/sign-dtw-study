@@ -85,6 +85,25 @@ def download(url, dest, retries=5):
     raise RuntimeError(f"download failed: {url}")
 
 
+def salvage_extract(tar_path, out_dir):
+    """Extract every readable member of a damaged archive; partial files are deleted so that a half video is never processed.
+    Returns (members extracted, members dropped)."""
+    ok = bad = 0
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with tarfile.open(tar_path) as tf:
+        try:
+            for m in tf:
+                try:
+                    tf.extract(m, out_dir)
+                    ok += 1
+                except Exception:
+                    (out_dir / m.name).unlink(missing_ok=True)
+                    bad += 1
+        except Exception:        # the archive ends inside a member header
+            bad += 1
+    return ok, bad
+
+
 def pack(results, names, out):
     lens = np.array([r["left"].shape[0] for r in results])
     offsets = np.concatenate([[0], np.cumsum(lens)])
@@ -141,6 +160,7 @@ def run(signs, workers=8, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
                 nxt += 1
             vid_dir = tmp_root / f"{sign}_{split}"
             shutil.rmtree(vid_dir, ignore_errors=True)
+            salv = None
             for attempt in range(2):
                 try:
                     with tarfile.open(tar_path) as tf:
@@ -151,7 +171,11 @@ def run(signs, workers=8, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
                     shutil.rmtree(vid_dir, ignore_errors=True)
                     tar_path.unlink(missing_ok=True)
                     if attempt == 1:
-                        raise
+                        # second attempt failed too: the archive on the server is damaged; keep what is readable
+                        _, tar_path, t_dl = fetch((sign, split))
+                        salv = salvage_extract(tar_path, vid_dir)
+                        print(f"salvaged damaged archive {sign} {split}: {salv[0]} members read, {salv[1]} dropped", flush=True)
+                        break
                     _, tar_path, t_dl = fetch((sign, split))
             tar_path.unlink()
             paths = sorted(vid_dir.rglob("*.mp4"))
@@ -163,7 +187,7 @@ def run(signs, workers=8, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
                     r["face"] = np.zeros((r["left"].shape[0], 0, 3), dtype=np.float32)
             pack([r for _, r in keep], [p.name for p, _ in keep], C.LANDMARKS / sign / f"{split}.npz")
             shutil.rmtree(vid_dir, ignore_errors=True)
-            rec = dict(sign=sign, split=split, videos=len(paths), kept=len(keep), download_s=round(t_dl, 1),
+            rec = dict(sign=sign, split=split, salvaged=bool(salv), videos=len(paths), kept=len(keep), download_s=round(t_dl, 1),
                        extract_s=round(time.time() - t, 1), **versions())
             with open(log, "a") as f:
                 f.write(json.dumps(rec) + "\n")
