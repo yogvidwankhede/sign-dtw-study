@@ -578,6 +578,7 @@ def main():
     if not C.ASLC:
         per_sign(df, max(vocabs), signs, led)
     timing_table(led)
+    led.add("nVocabCount", len(vocabs), "number of vocabulary sizes evaluated", "results/tables/main_top1.csv", fmt="{:d}")
     led.add("nVocabMax", max(vocabs), "largest vocabulary evaluated", "results/tables/main_top1.csv", fmt="{:d}")
     led.add("nTestSigners", int(tab.signer.nunique()), "test signers (bootstrap clusters)", "results/raw/test/dtw1nn.csv.gz", fmt="{:d}")
     for m in [m for m in MW if m not in ("fastdtw_r1", "legacy_fastdtw")]:
