@@ -104,3 +104,8 @@ Items 7 and 8 were run (embedding transfer on ASL Citizen and PopSign; soft-DTW 
 disk filled; the disk was later freed, the extraction was resumed (one archive, `TV.tar`, needed an uppercase file name on the server) and finished, and the 100-sign grid was run with the
 frozen `prereg-v1` settings and an independent query draw. The first run of the embedding baseline on PopSign was killed for memory (an oversized distance array); the fix is
 mathematically identical, and a rerun of the ASL Citizen embedding baseline with it gave identical ranks and predictions. PopSign vocabulary 250 stays not run.
+
+### Data issue found during the PopSign 250 extraction (2026-10-07)
+The PopSign archive for the sign "aunt" in the validation split (`game/val/aunt.tar`) is damaged on the server: it downloads at its advertised size but ends inside a member, so
+standard extraction fails. The extractor now keeps every readable video and drops the damaged member (here 39 members read, 2 dropped, 38 videos recovered), deleting any partial file.
+Only a validation-split archive of one sign beyond the first 100 is affected, so it cannot touch the 10-, 50- or 100-sign results; it slightly reduces the validation queries for that sign at 250 signs.
