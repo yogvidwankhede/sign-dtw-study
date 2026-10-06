@@ -120,8 +120,15 @@ def run(signs, workers=8, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
         sign, split = job
         tar_path = tmp_root / f"{sign}_{split}.tar"
         t = time.time()
-        download(f"{C.BASE_URL}/{C.DATASET}/{C.CATEGORY}/{split}/{sign}.tar", tar_path)
-        return job, tar_path, time.time() - t
+        # a few archives are named with different capitalisation than the sign's page path (e.g. TV.tar for "tv")
+        errs = []
+        for name in dict.fromkeys([sign, sign.upper(), sign.capitalize()]):
+            try:
+                download(f"{C.BASE_URL}/{C.DATASET}/{C.CATEGORY}/{split}/{name}.tar", tar_path, retries=2 if name != sign else 5)
+                return job, tar_path, time.time() - t
+            except RuntimeError as e:
+                errs.append(str(e))
+        raise RuntimeError("; ".join(errs))
 
     ctx = mp.get_context("spawn")
     with ThreadPoolExecutor(max_workers=2) as dl, ctx.Pool(workers, initializer=_init_worker) as pool:
