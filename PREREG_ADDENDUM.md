@@ -98,3 +98,8 @@ confirmatory.
    (barycentre fitting is slow); other conditions are reported as not run.
 9. **PopSign vocabulary 100.** Extraction was extended to 100 signs. The main grid for vocabulary 100 uses the frozen settings of `prereg-v1` (as
    `PREREG.md` planned) and is evaluated on queries drawn when the 100-sign condition is built (independent of the 10- and 50-sign draws). Vocabulary 250 stays not run.
+
+### Outcome of the second batch (2026-10-06)
+Items 7 and 8 were run on ASL Citizen (embedding transfer, soft-DTW) and soft-DTW on PopSign. **Item 9 (PopSign vocabulary 100) was not completed:** extraction reached 85 of
+100 signs and then crashed with a write error because the disk was full (other processes on the machine had filled it; only about 4 GB were free afterwards, too little to
+continue). PopSign vocabulary 100, and the PopSign version of the embedding baseline (which needs signs 51-100), are therefore reported as not run.

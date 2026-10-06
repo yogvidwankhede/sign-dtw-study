@@ -56,3 +56,9 @@ Nothing here can be done by the code or by an assistant. Items marked (blocking)
 - Submission materials now exist locally; see `SUBMISSION.md` for the table of what is ready and the short list of what only you can do.
 - To send the community-feedback request: personalise `outreach/summary.tex` (name, contact, payment offer), compile it, and follow the steps in `ETHICS.md`.
 - For a double-blind venue: run `python scripts/make_anon.py`, re-check the grep report is 0, and submit only that copy's PDF and repository.
+
+
+## 2026-10-06 disk
+- The disk is nearly full (about 4 GB free of 926 GB) because of things outside this project (for example `~/Downloads` is about 20 GB and `~/.cache` about 25 GB, of which the uv cache is 5.5 GB).
+  PopSign extraction to 100 signs stopped at 85 signs after a write error. To finish it, free at least 15 GB, then run `make extract VOCAB=100` and
+  `python -m signstudy.pipeline main --split test --vocab 100 --only-vocabs 100 --suffix _v100`, then `python -m signstudy.extra second --split test --vocab 100 --which embed --pre-from 50`.
