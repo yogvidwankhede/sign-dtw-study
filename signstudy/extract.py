@@ -141,8 +141,18 @@ def run(signs, workers=8, log=C.LANDMARKS / "EXTRACTION_LOG.jsonl"):
                 nxt += 1
             vid_dir = tmp_root / f"{sign}_{split}"
             shutil.rmtree(vid_dir, ignore_errors=True)
-            with tarfile.open(tar_path) as tf:
-                tf.extractall(vid_dir)
+            for attempt in range(2):
+                try:
+                    with tarfile.open(tar_path) as tf:
+                        tf.extractall(vid_dir)
+                    break
+                except (tarfile.ReadError, EOFError, OSError) as e:      # truncated or corrupt archive: fetch it again from scratch
+                    print(f"corrupt archive for {sign} {split} ({e}); downloading again", flush=True)
+                    shutil.rmtree(vid_dir, ignore_errors=True)
+                    tar_path.unlink(missing_ok=True)
+                    if attempt == 1:
+                        raise
+                    _, tar_path, t_dl = fetch((sign, split))
             tar_path.unlink()
             paths = sorted(vid_dir.rglob("*.mp4"))
             t = time.time()
