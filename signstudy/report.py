@@ -576,7 +576,7 @@ def main():
     latex_tables(d)
     ablation_table(led)
     if not C.ASLC:
-        per_sign(df, max(vocabs), signs, led)
+        per_sign(df, 50, signs, led)
     timing_table(led)
     led.add("nVocabCount", len(vocabs), "number of vocabulary sizes evaluated", "results/tables/main_top1.csv", fmt="{:d}")
     led.add("nVocabMax", max(vocabs), "largest vocabulary evaluated", "results/tables/main_top1.csv", fmt="{:d}")

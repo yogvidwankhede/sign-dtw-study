@@ -5,7 +5,7 @@
 signs) and ASL Citizen (crowd-sourced webcam video). We do not test other languages, cameras or continuous signing.
 \item \textbf{Few signers.} The PopSign test split has 8 signers and ASL Citizen 11 participants, so signer-clustered intervals are wide and small
 differences are not resolvable. Training noise (3 seeds) is smaller than signer variation.
-\item \textbf{Vocabulary range.} The vocabulary sweep reaches 300 signs only on ASL Citizen; on PopSign it reaches 100 signs (the 100-sign condition uses settings tuned at 50 signs and an independent query draw).
+\item \textbf{Vocabulary range.} The vocabulary sweep reaches 300 signs only on ASL Citizen; on PopSign it reaches the full 250 signs (the 100- and 250-sign conditions use settings tuned at 50 signs and an independent query draw).
 \item \textbf{Small models, limited tuning.} The learned models are small and tuned on a small grid at one condition
 (50 signs, 10 examples per sign). All three chose the longest epoch budget in the grid. Longer training and per-$k$ tuning changed little (Section~\ref{sec:extension}), but larger models
 or pre-training may change the picture.

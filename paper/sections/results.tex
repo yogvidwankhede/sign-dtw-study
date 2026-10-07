@@ -14,6 +14,12 @@ the sign.
 \texttt{results/tables/main\_top1.md}.}
 \label{tab:main50}
 \end{table}
+\begin{table}[t]
+\centering\small
+\input{../results/tables/main_v250.tex}
+\caption{Top-1 accuracy (\%) at the full vocabulary of 250 PopSign signs on the 8 held-out test signers (exploratory; settings frozen at 50 signs).}
+\label{tab:main250}
+\end{table}
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{../figures/accuracy_vs_k.pdf}
@@ -27,7 +33,7 @@ At a vocabulary of 50 signs and 10 examples per sign, the 1D-CNN reaches \accCnn
 (Table~\ref{tab:main50}, Figure~\ref{fig:acc}). With all training videos the learned models reach \accTransVFiftyKAll\%
 (Transformer), \accCnnVFiftyKAll\% (CNN) and \accGruVFiftyKAll\% (BiGRU), and DTW \accDtwVFiftyKAll\%. At 10 signs the ordering
 is the same: \accCnnVTenKAll\% (CNN) and \accDtwVTenKAll\% (DTW) with all training videos. At 100 signs (settings frozen at 50 signs; queries drawn when that condition was built)
-the CNN reaches \accCnnVHundredKAll\% with all training videos against \accDtwVHundredKAll\% for DTW, and \accCnnVHundredKOne\% against \accDtwVHundredKOne\% with one example per sign.
+the CNN reaches \accCnnVHundredKAll\% with all training videos against \accDtwVHundredKAll\% for DTW, and \accCnnVHundredKOne\% against \accDtwVHundredKOne\% with one example per sign. At 250 signs, the full PopSign vocabulary (same frozen settings, independent query draw), all three learned models are far above DTW with all training videos (Transformer \accTransVTwoFiftyKAll\%, BiGRU \accGruVTwoFiftyKAll\%, CNN \accCnnVTwoFiftyKAll\%, against DTW \accDtwVTwoFiftyKAll\% and Euclidean \accEuclidVTwoFiftyKAll\%), while with one example per sign every method is at or below about 10\% (CNN \accCnnVTwoFiftyKOne\%, BiGRU \accGruVTwoFiftyKOne\%, DTW \accDtwVTwoFiftyKOne\%); the BiGRU is below DTW at $k=1$ there (Table~\ref{tab:main250}). The DBA prototype falls as examples are added at 250 signs (\texttt{results/tables/main\_v250.tex}); we did not investigate why.
 
 \subsection{Pre-registered hypotheses}
 \textbf{H1 is not supported.} We expected DTW to beat each learned model at vocabulary 50 with $k\le5$. Instead every learned
@@ -38,7 +44,7 @@ above DTW by about \difCnnVFiftyKAll{} (CNN), \difTransVFiftyKAll{} (Transformer
 
 \subsection{No crossover in the tested range}
 We looked for the number of examples per sign at which learned models overtake DTW and found none: at every vocabulary the best
-learned model is at or above DTW from $k=1$ upwards (smallest such $k$: \crossoverTen{} at 10 signs, \crossoverFifty{} at 50, \crossoverHundred{} at 100).
+learned model is at or above DTW from $k=1$ upwards (smallest such $k$: \crossoverTen{} at 10 signs, \crossoverFifty{} at 50, \crossoverHundred{} at 100, \crossoverTwoFifty{} at 250).
 In \nPairedLearnedExcl{} of the \nPairedLearned{} comparisons of a learned model with DTW (3 models, 6 values of $k$, \nVocabCount{} vocabularies) the 95\% interval excludes
 zero, and in \nPairedLearnedAhead{} the learned model's point estimate is higher (exploratory; no multiplicity correction). The gap is smallest at $k=1$, where every method is weak: at 50 signs no method
 exceeds \accTransVFiftyKOne\% (Transformer, the best) with one example per sign. Euclidean 1-NN is not worse than DTW at 50 signs:
@@ -112,7 +118,6 @@ processes running, and no low-power device was available. These costs exclude Me
 \input{sections/extension}
 
 \subsection{Coverage}
-On PopSign, a vocabulary of 250 signs was not run: landmark extraction for 50 signs took \extractHours{} hours on this machine, and the extension to 100 signs was interrupted once when the
-disk filled and resumed later, so 250 signs would have taken several times longer again. The vocabulary sweep up to 300 signs is on ASL Citizen
-(Section~\ref{sec:replication}). Soft-DTW prototypes, planned in the pre-registration, were not run. Of the \nVideosTest{} test queries at 50 signs,
+On PopSign the 250-sign condition was run last, after the 10-, 50- and 100-sign results were known, with settings frozen at 50 signs; it is exploratory in that sense, and face landmarks exist only for the first 50 signs. One validation archive (``aunt'') was damaged on the server and partly recovered (\texttt{PREREG\_ADDENDUM.md}). The vocabulary sweep up to 300 signs is on ASL Citizen
+(Section~\ref{sec:replication}). Of the \nVideosTest{} test queries at 50 signs,
 \nNoHandTest{} had no detected hand and is counted as an error; the training and validation splits have \nNoHandTrain{} and \nNoHandVal{} such videos.
