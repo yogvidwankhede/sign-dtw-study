@@ -1,0 +1,12 @@
+{
+ "commit": "9faa5e36d4294e4550faa59e7b50a8567a4f951a",
+ "prereg_diff": "signstudy/aslc.py       | 127 +++++++++++++++\n signstudy/config.py     |  24 ++-\n signstudy/experiment.py |  13 ++\n signstudy/extra.py      | 295 ++++++++++++++++++++++++++++++++++\n signstudy/extract.py    |  55 ++++++-\n signstudy/pipeline.py   |  69 ++++++--\n signstudy/report.py     | 414 ++++++++++++++++++++++++++++++++++++++++++++----\n signstudy/run.py        |  27 ++--\n signstudy/timing.py     |   2 +-\n signstudy/why.py        | 126 +++++++++++++++\n 10 files changed, 1080 insertions(+), 72 deletions(-)",
+ "python": "3.11.15",
+ "numpy": "1.26.4",
+ "torch": "2.14.1",
+ "tslearn": "0.9.0",
+ "mediapipe": "0.10.14",
+ "opencv": "4.11.0",
+ "machine": "macOS-26.6.2-arm64-arm-64bit",
+ "time": "2026-10-07 10:18:19"
+}
