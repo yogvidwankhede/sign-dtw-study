@@ -2,11 +2,11 @@
   "title": "signstudy: DTW versus learned models for isolated sign recognition from hand landmarks (code, pre-registration and aggregate results)",
   "upload_type": "software",
   "description": "Code, pre-registration (PREREG.md, PREREG_ADDENDUM.md), aggregate results and paper sources for a study comparing nearest-neighbour dynamic time warping with learned models for isolated sign recognition on PopSign ASL v1.0 and ASL Citizen. Isolated-sign recognition only; not translation; no claim about benefit to Deaf users. ASL Citizen derived data are not included (licence).",
-  "creators": [{"name": "Wankhede, Yogvid", "affiliation": "[to be completed by the author]"}],
+  "creators": [{"name": "Wankhede, Yogvid", "affiliation": "Independent Researcher", "orcid": "0009-0004-2258-6775"}],
   "license": "MIT",
   "keywords": ["sign language", "isolated sign recognition", "dynamic time warping", "MediaPipe", "pre-registration", "reproducibility"],
   "related_identifiers": [
     {"identifier": "10.52202/075280-0011", "relation": "isDerivedFrom", "scheme": "doi"}
   ],
-  "notes": "Creators are placeholders: the author must confirm name, affiliation and ORCID before minting a DOI."
+  "notes": "Creator details confirmed by the author (ORCID supplied 2026-10-07)."
 }

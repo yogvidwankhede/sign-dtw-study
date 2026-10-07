@@ -15,11 +15,12 @@ DROP |= {"paper/references_registry.bib"}
 REPL = [
     (r"Yogvid\s+Wankhede", "Anonymous Author"), (r"Wankhede", "Anonymous"), (r"Yogvid", "Anonymous"),
     (r"yogvidwankhede", "anonymous"), (r"[\w.+-]+@[\w-]+\.[\w.]+", "anonymous@example.invalid"),
+    (r"https?://orcid\.org/", ""), (r"0009-0004-2258-6775", "0000-0000-0000-0000"), (r"ORCID:\s*0000-0000-0000-0000", "ORCID: withheld"),
     (r"Washington University in St\. Louis|WashU", "[institution withheld]"),
     (r"\\citep\{mankar2024\}|\\citet\{mankar2024\}|\\cite\{mankar2024\}", r"(Anonymous, 2024)"),
 ]
 ANON_BIB = "@misc{anonymous2024,\n  author = {Anonymous},\n  title = {Details withheld for double-blind review},\n  year = {2024}\n}\n"
-PATTERNS = r"yogvid|wankhede|mankar|khawshe|thune|sahu|gmail|wustl|washu|ghrce|raisoni|icmsle|nagpur|10\.1007/978-981-97-1488"
+PATTERNS = r"yogvid|wankhede|mankar|khawshe|thune|sahu|gmail|0009-0004|wustl|washu|ghrce|raisoni|icmsle|nagpur|10\.1007/978-981-97-1488"
 
 
 def main():

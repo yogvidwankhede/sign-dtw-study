@@ -5,6 +5,8 @@ type: software
 authors:
   - family-names: "Wankhede"
     given-names: "Yogvid"
+    orcid: "https://orcid.org/0009-0004-2258-6775"
+    affiliation: "Independent Researcher"
 license: MIT
 references:
   - type: conference-paper
