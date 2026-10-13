@@ -51,9 +51,9 @@ def main():
     abstract = re.sub(r"\s+", " ", abstract).strip()
     (OUT / "METADATA.txt").write_text(
         "TITLE: When Does Training-Free DTW Match Learned Models on Hand Landmarks? A Data-Efficiency and Signer-Independence Study of Isolated Sign Recognition\n"
-        "AUTHORS: [to be completed by the author]\n"
+        "AUTHORS: Yogvid Wankhede (Independent Researcher; ORCID 0009-0004-2258-6775)\n"
         "CATEGORIES: cs.CV (primary) or cs.LG; cross-list cs.CL, cs.HC (author to choose)\n"
-        "COMMENTS: 11 pages, 5 tables, 2 figures. Code and aggregate results: [repository URL after publishing]\n"
+        "COMMENTS: 11 pages, 5 tables, 2 figures. Code and aggregate results: https://github.com/yogvidwankhede/sign-dtw-study (add once public)\n"
         "LICENSE: author to choose (CC BY 4.0 is common)\n\nABSTRACT:\n" + abstract + "\n")
     # intermediates not needed for upload
     for f in OUT.glob("paper.*"):
