@@ -4,7 +4,7 @@
 
 Dear Dr. [name],
 
-I am an independent researcher and a hearing non-signer working on a small, descriptive study of isolated sign
+I am an independent researcher working on a small, descriptive study of isolated sign
 recognition from hand and pose landmarks (PopSign ASL and ASL Citizen). Your paper on systemic biases in sign language AI
 shaped the limitations and ethics sections, and I would value your critical view before I post a preprint. The attached
 one-page summary says what was and was not done; the study makes no translation or interpreter claim.
