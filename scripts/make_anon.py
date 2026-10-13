@@ -15,6 +15,7 @@ DROP |= {"paper/references_registry.bib"}
 REPL = [
     (r"Yogvid\s+Wankhede", "Anonymous Author"), (r"Wankhede", "Anonymous"), (r"Yogvid", "Anonymous"),
     (r"yogvidwankhede", "anonymous"), (r"[\w.+-]+@[\w-]+\.[\w.]+", "anonymous@example.invalid"),
+    (r"10\.5281/zenodo\.\d+", "10.0000/withheld"),
     (r"https?://orcid\.org/", ""), (r"0009-0004-2258-6775", "0000-0000-0000-0000"), (r"ORCID:\s*0000-0000-0000-0000", "ORCID: withheld"),
     (r"Washington University in St\. Louis|WashU", "[institution withheld]"),
     (r"\\citep\{mankar2024\}|\\citet\{mankar2024\}|\\cite\{mankar2024\}", r"(Anonymous, 2024)"),

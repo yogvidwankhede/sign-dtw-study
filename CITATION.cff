@@ -1,5 +1,9 @@
 cff-version: 1.2.0
-message: "If you use this software or its results, please cite it. Author details are to be completed by the author before release."
+message: "If you use this software or its results, please cite it."
+doi: 10.5281/zenodo.23351799
+version: v0.1.0
+date-released: 2026-10-13
+repository-code: "https://github.com/yogvidwankhede/sign-dtw-study"
 title: "signstudy: DTW versus learned models for isolated sign recognition from hand landmarks"
 type: software
 authors:
