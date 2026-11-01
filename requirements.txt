@@ -6,7 +6,7 @@ pandas
 scipy
 scikit-learn
 torch==2.14.1
-tslearn==0.9.0
+tslearn==0.10.0
 fastdtw
 pyyaml
 matplotlib
